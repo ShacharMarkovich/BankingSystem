@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!-- 
+	NOTE: 
+		This is an auto generated file. 
+		It will be re-created upon each build in the SDK. 
+		Please do not assume that this file will remain unchanged. 
+-->
+<project name="DAL Build" default="postBuild" basedir=".">
+	<!-- The name of the project (Eclipse) -->
+	<property name="project_name" 						value="BankingSystem"/>
+	<!-- The build directory - note that the .jeff and .pack files of this directory will be deleted -->
+	<property name="bin_dir" 							location="C:\DALProjects\Project\BankingSystem\bin\ME11.5"/>
+	<!-- Project directory -->
+	<property name="project_dir" 						value="C:/DALProjects/Project/BankingSystem"/>
+	<!-- DAL SDK directory -->
+	<property name="sdk_dir" 							value="C:\DALsdk"/> 
+	<!-- Location of the dev tools -->
+	<property name="tools_location" 					value="${sdk_dir}\Platforms\ME11.5\PlatformTools"/> 
+	<!-- Location of the bhc tool-->
+	<property name="bhc_tool" 								value="${tools_location}\BhcTool\bhc.exe"/> 
+	<!-- Set to true if debug mode, false otherwise -->
+	<property name="debug" 								value="false"/>
+	<!-- The suffix of the dalp file if in debug mode -->
+	<property name="debug_output_suffix" 				value="-debug"/>	
+	<!-- Path to the  jeff file -->
+	<property name="jeff_output_file" value="${bin_dir}\${project_name}_ME11.5.jeff"/>
+	<!-- Path to the proguard jar file -->
+	<property name="jar_output_file" value="${bin_dir}\${project_name}_ME11.5.jar"/>
+	
+	<!--Set the debug property if needed-->
+	<target name="setProps">	
+		 <condition property="isDebug" value="true">
+			<equals arg1="${debug}" arg2="true"/>
+		  </condition>
+	</target>
+	
+	<!--Runs if the debug property was setted, sets up the values to use in building for debug-->
+	<target name="setDebug" if="isDebug"  depends="setProps">
+			<echo level="info">Building for Debug</echo>
+			<property name="bhc_debug_option" value="-g ':none'"/>
+	</target>
+
+	<!--Runs if the debug property was not setted, sets up the values to use in building for release-->
+	<target name="setNotDebug" unless="isDebug"  depends="setProps">
+			<echo level="info">Building for Release</echo>
+			<property name="bhc_debug_option" value=""/>
+	</target>
+
+	<target name="preBuild" depends="setDebug, setNotDebug">
+		<!-- Delete all the existing output files. -->
+		<delete>
+			<fileset dir="${bin_dir}" includes="**/*.pack"/>
+			<fileset dir="${bin_dir}" includes="**/*.jeff"/>
+		</delete>
+
+		
+		<!-- Echo all the relevant information. -->
+		<echo level="info">Jeff file: ${jeff_output_file}</echo>
+	</target>
+
+	
+	<!-- Builds a .jeff file from the project class files. -->
+	<target name="jeffFile" depends="preBuild">
+		<exec executable="${bhc_tool}" failonerror="true">	
+			<arg line="-o '${jeff_output_file}' ${bhc_debug_option} '${jar_output_file}'"/>
+		</exec>		
+		<echo level="info">BHC: Jeff file successfully created.</echo>
+	</target>	
+
+	
+	<!-- Post-build step. -->
+	<target name="postBuild" depends="jeffFile">
+		<echo level="info">Build .jeff file process finished successfully.</echo>
+	</target>
+	
+</project>

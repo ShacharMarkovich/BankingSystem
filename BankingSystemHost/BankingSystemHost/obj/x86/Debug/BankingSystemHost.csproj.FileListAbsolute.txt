@@ -1,0 +1,5 @@
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Debug\BankingSystemHost.exe
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Debug\BankingSystemHost.pdb
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Debug\JhiSharp.dll
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\obj\x86\Debug\BankingSystemHost.exe
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\obj\x86\Debug\BankingSystemHost.pdb

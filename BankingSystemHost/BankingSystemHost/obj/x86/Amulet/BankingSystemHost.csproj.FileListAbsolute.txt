@@ -1,0 +1,6 @@
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Amulet\BankingSystemHost.exe
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Amulet\BankingSystemHost.pdb
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\bin\Amulet\JhiSharp.dll
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\obj\x86\Amulet\BankingSystemHost.csprojResolveAssemblyReference.cache
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\obj\x86\Amulet\BankingSystemHost.exe
+C:\DALProjects\Project\BankingSystemHost\BankingSystemHost\obj\x86\Amulet\BankingSystemHost.pdb
