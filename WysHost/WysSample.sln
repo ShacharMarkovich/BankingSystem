@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WysHost", "WysHost\WysHost.csproj", "{A1830EBD-8817-43E5-9DDE-8F6D85492F92}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E4AC490D-0103-4FC3-BBED-196469A290E0} = {E4AC490D-0103-4FC3-BBED-196469A290E0}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WysLibrary", "WysLibrary\WysLibrary.vcxproj", "{E4AC490D-0103-4FC3-BBED-196469A290E0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Amulet|Mixed Platforms = Amulet|Mixed Platforms
+		Amulet|Win32 = Amulet|Win32
+		Amulet|x86 = Amulet|x86
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Debug|x86 = Debug|x86
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Amulet|Mixed Platforms.ActiveCfg = Amulet|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Amulet|Mixed Platforms.Build.0 = Amulet|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Amulet|Win32.ActiveCfg = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Amulet|x86.ActiveCfg = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Amulet|x86.Build.0 = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Debug|Win32.ActiveCfg = Debug|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Debug|x86.ActiveCfg = Debug|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Debug|x86.Build.0 = Debug|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Release|Mixed Platforms.Build.0 = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Release|Win32.ActiveCfg = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Release|x86.ActiveCfg = Release|x86
+		{A1830EBD-8817-43E5-9DDE-8F6D85492F92}.Release|x86.Build.0 = Release|x86
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Amulet|Mixed Platforms.ActiveCfg = Amulet|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Amulet|Mixed Platforms.Build.0 = Amulet|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Amulet|Win32.ActiveCfg = Amulet|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Amulet|Win32.Build.0 = Amulet|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Amulet|x86.ActiveCfg = Amulet|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Debug|Win32.Build.0 = Debug|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Debug|x86.ActiveCfg = Debug|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Release|Win32.ActiveCfg = Release|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Release|Win32.Build.0 = Release|Win32
+		{E4AC490D-0103-4FC3-BBED-196469A290E0}.Release|x86.ActiveCfg = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

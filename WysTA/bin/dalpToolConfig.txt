@@ -1,0 +1,4 @@
+::Name WysTA
+::Description This is the WysTA applet
+::Vendor DALSDK_build
+::Applet C:\DALsdk\Samples\WysSample\WysTA\bin\ME10.0\WysTA_ME10.0.pack ::FwVersion 10.0.0

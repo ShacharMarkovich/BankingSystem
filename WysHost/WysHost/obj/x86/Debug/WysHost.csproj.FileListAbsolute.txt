@@ -1,0 +1,8 @@
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\bin\Debug\WysHost.exe
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\bin\Debug\WysHost.pdb
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.csprojResolveAssemblyReference.cache
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.Form1.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.Properties.Resources.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.csproj.GenerateResource.Cache
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.exe
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Debug\WysHost.pdb

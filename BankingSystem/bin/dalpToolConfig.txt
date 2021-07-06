@@ -1,8 +1,0 @@
-::Name BankingSystem
-::Description This is the BankingSystem applet
-::Vendor DALSDK_build
-::Applet C:\DALProjects\Project\BankingSystem\bin\ME11.5\BankingSystem_ME11.5.pack ::FwVersion 11.0.0
-::Applet C:\DALProjects\Project\BankingSystem\bin\ME11.8\BankingSystem_ME11.8.pack ::FwVersion 11.0.0
-::Applet C:\DALProjects\Project\BankingSystem\bin\TXE3.0\BankingSystem_TXE3.0.pack ::FwVersion 11.0.0
-::Applet C:\DALProjects\Project\BankingSystem\bin\TXE3.1.50\BankingSystem_TXE3.1.50.pack ::FwVersion 11.0.0
-::Applet C:\DALProjects\Project\BankingSystem\bin\TXE4.0\BankingSystem_TXE4.0.pack ::FwVersion 11.0.0

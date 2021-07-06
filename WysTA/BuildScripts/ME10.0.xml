@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<!-- 
+	NOTE: 
+		This is an auto generated file. 
+		It will be re-created upon each build in the SDK. 
+		Please do not assume that this file will remain unchanged. 
+-->
+<project name="DAL Build" default="postBuild" basedir=".">
+	<!-- The name of the project (Eclipse) -->
+	<property name="project_name" 						value="WysTA"/>
+	<!-- The build directory - note that the .jeff and .pack files of this directory will be deleted -->
+	<property name="bin_dir" 							location="C:\DALsdk\Samples\WysSample\WysTA\bin\ME10.0"/>
+	<!-- Project directory -->
+	<property name="project_dir" 						value="C:/DALsdk/Samples/WysSample/WysTA"/>
+	<!-- DAL SDK directory -->
+	<property name="sdk_dir" 							value="C:\DALsdk"/> 
+	<!-- value indicating if this is a compilation for signing -->
+	<property name="signingFlag"						value="false"/>
+	<!-- The applet's firmware version (full platform name without the firmware name) -->
+	<property name="fwVersion"							value="10.0"/>
+	<!-- Location of the dev tools -->
+	<property name="tools_location" 					value="${sdk_dir}\Platforms\ME10.0\PlatformTools"/> 
+	<!-- Location of the pack tool -->
+	<property name="pack_tool" 							value="${sdk_dir}\Tools\PackTool\PackTool.exe"/>
+	<!-- Location of the bhc tool-->
+	<property name="bhc_tool" 								value="${tools_location}\BhcTool\bhc.exe"/> 
+	<!-- Set to true if debug mode, false otherwise -->
+	<property name="debug" 								value="false"/>
+	<!-- The suffix of the dalp file if in debug mode -->
+	<property name="debug_output_suffix" 				value="-debug"/>	
+	<!-- Path to the  applet's  manifest  file (include path and file name) -->
+	<property name="manifest" location="${project_dir}\Manifests\ME10.0.DALManifest"/>
+	<!-- Path to the  jeff file -->
+	<property name="jeff_output_file" value="${bin_dir}\${project_name}_ME10.0.jeff"/>
+	<!-- Path to the pack file -->
+	<property name="pack_output_file" value="${bin_dir}\${project_name}_ME10.0.pack"/>
+	<!-- Path to the proguard jar file -->
+	<property name="jar_output_file" value="${bin_dir}\${project_name}_ME10.0.jar"/>
+	<!-- Additional platform dependent parameters -->
+	<property name="jeff_additional_parameters" value=""/>
+	
+	<!--Set the debug property if needed-->
+	<target name="setProps">	
+		 <condition property="isDebug" value="true">
+			<equals arg1="${debug}" arg2="true"/>
+		  </condition>
+	</target>
+	
+	<!--Runs if the debug property was setted, sets up the values to use in building for debug-->
+	<target name="setDebug" if="isDebug"  depends="setProps">
+			<echo level="info">Building for Debug</echo>
+			<property name="dalp_debug_option" value="${debug_output_suffix}"/>
+			<property name="bhc_debug_option" value="-g ':none'"/>
+	</target>
+
+	<!--Runs if the debug property was not setted, sets up the values to use in building for release-->
+	<target name="setNotDebug" unless="isDebug"  depends="setProps">
+			<echo level="info">Building for Release</echo>
+			<property name="dalp_debug_option" value=""/>
+			<property name="bhc_debug_option" value=""/>
+	</target>
+
+	<!--Set the signing flag property if needed-->
+	<target name="setSigningFlag">	
+		 <condition property="isSigning" value="true">
+			<equals arg1="${signingFlag}" arg2="true"/>
+		  </condition>
+	</target>
+	
+	<!--Runs if the signing property was setted, sets up the values to use in building the pack file-->
+	<target name="setSigning" if="isSigning"  depends="setSigningFlag">
+			<echo level="info">Building for signing</echo>
+			<property name="signing_option" value="-signing"/>
+	</target>	
+	
+	<!--Runs if the signing property was not setted, sets up the values to use in building the pack file-->
+		<target name="setNotSigning" unless="isSigning"  depends="setSigningFlag">
+				<property name="signing_option" value=""/>
+		</target>
+	
+	<target name="preBuild" depends="setDebug, setNotDebug,setNotSigning, setSigning">
+		<!-- Delete all the existing output files. -->
+		<delete>
+			<fileset dir="${bin_dir}" includes="**/*.pack"/>
+			<fileset dir="${bin_dir}" includes="**/*.jeff"/>
+		</delete>
+
+		
+		<!-- Echo all the relevant information. -->
+		<echo level="info">Manifest file: ${manifest}</echo>
+		<echo level="info">Jeff file: ${jeff_output_file}</echo>
+		<echo level="info">Pack file: ${pack_output_file}</echo>
+	</target>
+
+	
+	<!-- Builds a .jeff file from the project class files. -->
+	<target name="jeffFile" depends="preBuild">
+		<exec executable="${bhc_tool}" failonerror="true">	
+			<arg line="-o '${jeff_output_file}' ${bhc_debug_option} ${jeff_additional_parameters} '${jar_output_file}'"/>
+		</exec>	
+		<echo level="info">${jeff_additional_parameters}</echo>		
+		<echo level="info">BHC: Jeff file successfully created.</echo>
+	</target>	
+	
+	<!-- Signs the jeff file and produces a pack file. -->
+	<target name="packFile" depends="jeffFile">
+		<exec executable="${pack_tool}" failonerror="true">	
+			<arg line="Pack -jeff '${jeff_output_file}' -conf '${manifest}' -out '${pack_output_file}' -version '${fwVersion}' '${signing_option}'"/>
+		</exec>		
+		<echo level="info">Pack file successfully created.</echo>
+	</target>
+	
+	<!-- Post-build step. -->
+	<target name="postBuild" depends="packFile">
+		<echo level="info">Build process finished successfully.</echo>
+	</target>
+	
+</project>
