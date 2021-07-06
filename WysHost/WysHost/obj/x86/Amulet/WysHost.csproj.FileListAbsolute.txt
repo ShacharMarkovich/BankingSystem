@@ -1,0 +1,10 @@
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\bin\Amulet\WysHost.exe
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\bin\Amulet\WysHost.pdb
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.Form1.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.Properties.Resources.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.csproj.GenerateResource.Cache
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.exe
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.pdb
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.MainWin.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.RegisterWin.resources
+C:\DALsdk\Samples\WysSample\WysHost\WysHost\obj\x86\Amulet\WysHost.LoginWin.resources

@@ -1,1 +1,21 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.Cpp.Platform.targets(57,5): error MSB8020: The build tools for v142 (Platform Toolset = 'v142') cannot be found. To build using the v142 build tools, please install v142 build tools.  Alternatively, you may upgrade to the current Visual Studio tools by selecting the Project menu or right-click the solution, and then selecting "Retarget solution".
+﻿  WysUtil.cpp
+  Wys.cpp
+  SignatureVerifier.cpp
+  PavpHandler.cpp
+  Interface.cpp
+  DelayLoader.cpp
+  AuthHelper.cpp
+  Generating Code...
+AuthHelper.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
+     Creating library C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.lib and object C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.exp
+CertHelper_d.lib(CertHelper.obj) : warning LNK4099: PDB 'CertHelper2.pdb' was not found with 'CertHelper_d.lib(CertHelper.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CertHelper2.pdb'; linking object as if no debug info
+CertHelper_d.lib(CryptoHelper.obj) : warning LNK4099: PDB 'CertHelper2.pdb' was not found with 'CertHelper_d.lib(CryptoHelper.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CertHelper2.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(bignumber.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(bignumber.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(crypt_data_gen.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(crypt_data_gen.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(ecpf.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(ecpf.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(intel_auxiliary_device.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(intel_auxiliary_device.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(intel_pavp_device.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(intel_pavp_device.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(pf.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(pf.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+CryptoDataGen_d.lib(sigma_crypto_utils.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(sigma_crypto_utils.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
+  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.dll
+  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.pdb (Full PDB)

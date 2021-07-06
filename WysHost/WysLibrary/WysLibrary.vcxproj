@@ -17,6 +17,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{E4AC490D-0103-4FC3-BBED-196469A290E0}</ProjectGuid>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -26,13 +27,13 @@
     <DalTemplate />
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Amulet|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -61,10 +62,10 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>JHI.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
-      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2010</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2015</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -74,11 +75,11 @@
       <PreprocessorDefinitions>WYSAMULET;IPTDEBUG;WIN32;_DEBUG;_WINDOWS;_USRDLL;IPTWYS_EXPORTS;UNICODE;AMULET;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;Shlwapi.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;Shlwapi.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>JHI.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2010</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2015</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
