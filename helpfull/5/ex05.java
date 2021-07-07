@@ -62,9 +62,7 @@ public class ex05 extends IntelApplet {
 	}
 	
 	//compare 2 byte arrays
-	private boolean byteArrayEquals(byte[] a, byte[] b)
-
-	{
+	private boolean byteArrayEquals(byte[] a, byte[] b)	{
 		int i = 0;
 
 		while (i < a.length && i < b.length) {

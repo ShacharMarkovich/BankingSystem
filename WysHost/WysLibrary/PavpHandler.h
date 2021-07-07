@@ -39,7 +39,7 @@
 #include <Windows.h>
 #include <d3d9.h>
 #include <dxva.h>
-#include <intel_pavp_device.h>
+#include "intel_pavp_device.h"
 #include "intel_pavp_api.h"
 #include "d3d9types.h"
 #include "WYSUtil.h"

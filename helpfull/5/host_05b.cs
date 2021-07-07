@@ -44,7 +44,7 @@ namespace ex05_B_RonKeinan_203735857Host
 
 
         //method to start a socket connection and send to it the message
-        public static string StartClientSync(string message)
+        public static string StartClientSync(string message) // send and recv
         {
             // Data buffer for incoming data.  
             byte[] bytes = new byte[1024];
@@ -234,7 +234,7 @@ namespace ex05_B_RonKeinan_203735857Host
             return false;
         }
 
-        //get OTP from server - based on HMAC of seed+counter, hashed by SHA1
+        //get OTP from applet - based on HMAC of seed+counter, hashed by SHA1
         private static byte[] getOTP(Jhi jhi)
         {
             byte[] recvBuff = new byte[512];

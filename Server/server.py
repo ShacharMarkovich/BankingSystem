@@ -1,59 +1,48 @@
 import logging
 import socket
-import sqlite3
 import sys
+import models
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
-table_name = "Accounts"
-table_columns = "f_name text, l_name text, balance real, username text, salt text, password_hashed text"
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
-PORT = 12345  # Port to listen on (non-privileged ports are > 1023)
+from models import *
 
 
-def init_table_connection(c):
-    cur = c.cursor()
-    cur.execute(f''' SELECT count(name) FROM sqlite_master WHERE type='table' AND name='{table_name}' ''')
-    if cur.fetchone()[0] == 1:
-        logging.info("Table exists.")
-    else:
-        cur.execute(f'''CREATE TABLE {table_name} ({table_columns})''')
-        cur.execute(f'''INSERT INTO {table_name} (f_name,l_name ,balance,username,salt,password_hashed)
-VALUES( "Admin","Admin",9999999999,"Admin","000000","000000");''')
-        c.commit()
+engine = create_engine('sqlite:///college.db', echo=True)
+session = sessionmaker(bind=engine)()
+Base = declarative_base()
+
+
+def insert(acc: models.Account):
+    pass
 
 
 def login(data):
     pass
 
 
-def server_listen_loop(con):
+def server_listen_loop():
     logging.info("Waiting for connection")
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as listen_socket:
+        listen_socket.bind((HOST, PORT))
+        listen_socket.listen()
         while True:
-            try:
-                conn, addr = s.accept()
-                with conn:
-                    print('Connected by', addr)
-                    while True:
-                        data = conn.recv(1024)
-                        if not data:
-                            break
-                        login(data)
-                        logging.info(data.decode())
-                        conn.sendall(b"I got it!")
-                        break
-            except ConnectionResetError:
-                pass
+            conn_socket, addr = listen_socket.accept()
+            with conn_socket:
+                print('Connected by', addr)
+                while True:
+                    data = conn_socket.recv(MAX_MSG)
+                    login(data)
+                    logging.info(data.decode())
+                    conn_socket.send(b"I got it!")
+                    break
 
 
 def main():
     # Press the green button in the gutter to run the script.
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-    con = sqlite3.connect('example.db')
-    con.commit()
-    init_table_connection(con)
-    server_listen_loop(con)
+    server_listen_loop()
 
 
 if __name__ == '__main__':

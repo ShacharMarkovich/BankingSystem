@@ -1,11 +1,2 @@
-﻿  WysUtil.cpp
-  Wys.cpp
-  SignatureVerifier.cpp
-  PavpHandler.cpp
-  Interface.cpp
-  DelayLoader.cpp
-  AuthHelper.cpp
-  Generating Code...
-     Creating library C:\DALsdk\Samples\WysSample\WysHost\Amulet\WysLibrary.lib and object C:\DALsdk\Samples\WysSample\WysHost\Amulet\WysLibrary.exp
-  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Amulet\WysLibrary.dll
+﻿  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Amulet\WysLibrary.dll
   WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Amulet\WysLibrary.pdb (Full PDB)

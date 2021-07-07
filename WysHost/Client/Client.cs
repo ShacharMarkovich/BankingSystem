@@ -26,7 +26,7 @@ namespace Client
             {
                 _sender.Connect(_remoteEP);
             }
-            catch (Exception e)
+            catch
             {
                 Console.WriteLine("[!] Server is not Working!");
             }
@@ -58,7 +58,7 @@ namespace Client
                 // Send the data through the socket.    
                 int bytesSent = _sender.Send(byteMsg);
             }
-            catch (Exception e)
+            catch
             {
                 Console.WriteLine("[!] Server is not Working!");
             }
@@ -73,7 +73,7 @@ namespace Client
                 int bufferSize = _sender.Receive(buffer);
                 msg = Encoding.ASCII.GetString(buffer, 0, bufferSize); // TODO: maybe leave it as byte[]
             }
-            catch (Exception e)
+            catch
             {
                 Console.WriteLine("[!] Server is not Working!");
             }

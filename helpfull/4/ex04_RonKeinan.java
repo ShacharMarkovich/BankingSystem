@@ -68,9 +68,7 @@ public class ex04_RonKeinan extends IntelApplet {
 		return ( ((b[3] & 0xFF)<<24) | ((b[2] & 0xFF)<<16) | ((b[1] & 0xFF)<<8) | ((b[0] & 0xFF)<<0) );
 	}
 	
-	private boolean byteArrayEquals(byte[] a, byte[] b)
-
-	{
+	private boolean byteArrayEquals(byte[] a, byte[] b)	{
 		int i = 0;
 
 		while (i < a.length && i < b.length) {

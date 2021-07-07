@@ -45,7 +45,7 @@ Wys::Wys()
 
 		//This is the path to the Intel DAL trusted application that was created in Eclipse.
 		taPath=getenv("DALSDK");
-		taPath.append("\\Samples\\WysSample\\WysTA\\bin\\WysTA.dalp");
+		taPath = taPath.append("\\WysHost\\bin\\WysTA.dalp");
 
 		//This is the UUID of this trusted application.
 		//This is the same value as the UUID field in the Intel DAL trusted application manifest.

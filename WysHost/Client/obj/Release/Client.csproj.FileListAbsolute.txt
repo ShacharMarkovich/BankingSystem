@@ -1,0 +1,9 @@
+C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.dll
+C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.pdb
+C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.dll
+C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.pdb
+C:\DALsdk\Samples\WysSample\WysHost\Client\bin\Release\Client.dll
+C:\DALsdk\Samples\WysSample\WysHost\Client\bin\Release\Client.pdb
+C:\DALsdk\Samples\WysSample\WysHost\Client\obj\Release\Client.csprojResolveAssemblyReference.cache
+C:\DALsdk\Samples\WysSample\WysHost\Client\obj\Release\Client.dll
+C:\DALsdk\Samples\WysSample\WysHost\Client\obj\Release\Client.pdb

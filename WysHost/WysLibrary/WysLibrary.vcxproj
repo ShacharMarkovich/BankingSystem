@@ -97,8 +97,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AuthHelper.h" />
+    <ClInclude Include="inc\bignumber.h" />
+    <ClInclude Include="inc\cdg_status_codes.h" />
+    <ClInclude Include="inc\CertHelper.h" />
+    <ClInclude Include="inc\CryptoHelper.h" />
+    <ClInclude Include="inc\crypt_data_gen.h" />
+    <ClInclude Include="inc\ecdsa_crypto.h" />
+    <ClInclude Include="inc\ecpf.h" />
+    <ClInclude Include="inc\epid_constants.h" />
+    <ClInclude Include="inc\epid_errors.h" />
+    <ClInclude Include="inc\epid_issuer.h" />
+    <ClInclude Include="inc\epid_macros.h" />
+    <ClInclude Include="inc\epid_member.h" />
+    <ClInclude Include="inc\epid_prng.h" />
+    <ClInclude Include="inc\epid_types.h" />
+    <ClInclude Include="inc\epid_verifier.h" />
+    <ClInclude Include="inc\helper.h" />
+    <ClInclude Include="inc\intel_auxiliary_api.h" />
+    <ClInclude Include="inc\intel_auxiliary_device.h" />
+    <ClInclude Include="inc\intel_pavp_api.h" />
+    <ClInclude Include="inc\intel_pavp_device.h" />
+    <ClInclude Include="inc\intel_pavp_epid_api.h" />
+    <ClInclude Include="inc\intel_pavp_gpucp11_api.h" />
+    <ClInclude Include="inc\intel_pavp_gpucp_api.h" />
+    <ClInclude Include="inc\intel_pavp_legacy_api.h" />
+    <ClInclude Include="inc\intel_pavp_mv_api.h" />
+    <ClInclude Include="inc\intel_pavp_presi_key.h" />
+    <ClInclude Include="inc\intel_pavp_types.h" />
+    <ClInclude Include="inc\ippcp.h" />
+    <ClInclude Include="inc\ippdefs.h" />
+    <ClInclude Include="inc\le2be_macros.h" />
+    <ClInclude Include="inc\pf.h" />
+    <ClInclude Include="inc\prng.h" />
+    <ClInclude Include="inc\serialization.h" />
+    <ClInclude Include="inc\sigma_crypto_utils.h" />
+    <ClInclude Include="inc\typedefs.h" />
     <ClInclude Include="Interface.h" />
     <ClInclude Include="PavpHandler.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Wys.h" />
     <ClInclude Include="WysImage.h" />
     <ClInclude Include="WYSUtil.h" />
@@ -111,6 +147,12 @@
     <ClCompile Include="SignatureVerifier.cpp" />
     <ClCompile Include="Wys.cpp" />
     <ClCompile Include="WysUtil.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WysLibrary.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="inc\xplat.mk" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
