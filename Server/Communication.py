@@ -35,7 +35,7 @@ class Communication:
         logging.info("start communicate!")
         while code != self.EXIT:
             enc_data = self.conn_socket.recv(self.MAX_MSG)
-
+            print(f"recv: {enc_data}")
             data = self.decrypt(enc_data)
             try:
                 code, params = self.parse(data)

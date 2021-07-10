@@ -35,7 +35,6 @@
             this.loginBtn = new System.Windows.Forms.Button();
             this.retBtn = new System.Windows.Forms.Button();
             this.instLbl = new System.Windows.Forms.Label();
-            this.testBtn = new System.Windows.Forms.Button();
             passwordLabel = new System.Windows.Forms.Label();
             usernameLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -102,22 +101,11 @@
             this.instLbl.TabIndex = 27;
             this.instLbl.Text = "Login:";
             // 
-            // testBtn
-            // 
-            this.testBtn.Location = new System.Drawing.Point(12, 166);
-            this.testBtn.Name = "testBtn";
-            this.testBtn.Size = new System.Drawing.Size(75, 23);
-            this.testBtn.TabIndex = 28;
-            this.testBtn.Text = "Test";
-            this.testBtn.UseVisualStyleBackColor = true;
-            this.testBtn.Click += new System.EventHandler(this.testBtn_Click);
-            // 
             // LoginWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(359, 201);
-            this.Controls.Add(this.testBtn);
             this.Controls.Add(this.instLbl);
             this.Controls.Add(this.retBtn);
             this.Controls.Add(this.loginBtn);
@@ -139,6 +127,5 @@
         private System.Windows.Forms.Button loginBtn;
         private System.Windows.Forms.Button retBtn;
         private System.Windows.Forms.Label instLbl;
-        private System.Windows.Forms.Button testBtn;
     }
 }

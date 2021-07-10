@@ -28,10 +28,5 @@ namespace WysHost
                 MessageBox.Show("Please fill both username & password!");
             new AccountPage().ShowDialog();
         }
-
-        private void testBtn_Click(object sender, EventArgs e)
-        {
-            Connector c = Connector.getInstance();
-        }
     }
 }

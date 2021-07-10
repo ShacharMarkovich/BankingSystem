@@ -78,7 +78,6 @@ namespace WysHost
             Console.WriteLine("Opening session.");
             jhi.CreateSession(appletID, JHI_SESSION_FLAGS.None, initBuffer, out session);
             _client = Client.Client.getInstance();
-            KeyExchange();
         }
 
         public void KeyExchange()
@@ -86,7 +85,6 @@ namespace WysHost
             byte[] encSharedKey = _client.KeyExchange(Exponent, Modulus);
             MessageBox.Show(UTF32Encoding.UTF8.GetString(SendDAL(encSharedKey, cmdID.sendEncryptedSession)));
         }
-
 
         public byte[] getModulusFromDAL() => SendDAL(null, cmdID.getModulus);
 
@@ -98,9 +96,7 @@ namespace WysHost
             byte[] recvBuff = new byte[2000];
             int responseCode;
             Console.WriteLine("Performing send and receive.");
-            MessageBox.Show("Blob1");
             jhi.SendAndRecv2(session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
-            MessageBox.Show("Blob2");
             Console.Out.WriteLine("Response buffer is " + UTF32Encoding.UTF8.GetString(recvBuff));
             Thread.Sleep(1000);
             return recvBuff;

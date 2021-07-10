@@ -13,8 +13,6 @@ class Cipher:
         """
         self.shared_key = secrets.token_hex(16).encode()
         self.iv = secrets.token_hex(8).encode()
-        print(f"[!] secret shared key: {self.shared_key}")
-        print(f"[!] secret shared key: {self.iv}")
         self.rsa_pubkey = None
 
     def cipher_obj(self):

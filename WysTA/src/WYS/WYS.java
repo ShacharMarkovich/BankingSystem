@@ -151,28 +151,26 @@ public class WYS extends IntelApplet
 				break;
 				////////////////////////////////////////////////
 			case COMMAND_GET_MODULUS:
-				DebugPrint.printString("send modulus, the size is:");
-				DebugPrint.printInt(modulus.length);
 				setResponse(modulus,0,modulus.length);
+				DebugPrint.printString("get modulus");
 				res = RESPONSE_OK;
 				break;
 			case COMMAND_GET_EXPONENT:
-				DebugPrint.printString("send exponent, the size is:");
-				DebugPrint.printInt(exponent.length);
 				setResponse(exponent,0,exponent.length);
+				DebugPrint.printString("get exponent");
 				res = RESPONSE_OK;
 				break;
 			case COMMAND_GET_ENCRYPTED_SESSION_KEY:
-				DebugPrint.printString("got shared key and iv, the data is:");
-				
-				byte[] data = new byte[32 + 16/*len(publickey) + len(iv)*/];
-				
-				rsa.decryptComplete(request, (short)0, (short)data.length, data,(short) 0);
-				DebugPrint.printString(new String(data));
+				byte[] data = new byte[modulus.length];
+				rsa.decryptComplete(request, (short)0, (short)modulus.length, data,(short) 0);
+				DebugPrint.printString("dec shared key");
 				res = RESPONSE_OK;
-				aes_cbc.setKey(data, (short)0, (short)32);
-				aes_cbc.setIV(data, (short)32, (short)16);
-				
+
+				aes_cbc.setKey(data, (short)0, (short)16);
+				DebugPrint.printString("setKey");
+				aes_cbc.setIV(data, (short)16, (short)8);
+				DebugPrint.printString("setIV");
+
 				setResponse(data, 0, data.length);
 				break;
 				//////////////////////////////////////////////
