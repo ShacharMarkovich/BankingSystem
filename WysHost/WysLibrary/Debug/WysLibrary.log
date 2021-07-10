@@ -1,21 +1,12 @@
 ﻿  WysUtil.cpp
   Wys.cpp
+c:\users\naor\source\repos\shacharmarkovich\bankingsystem\wyshost\wyslibrary\pavphandler.h(42): fatal error C1083: Cannot open include file: 'intel_pavp_device.h': No such file or directory
   SignatureVerifier.cpp
   PavpHandler.cpp
+c:\users\naor\source\repos\shacharmarkovich\bankingsystem\wyshost\wyslibrary\pavphandler.h(42): fatal error C1083: Cannot open include file: 'intel_pavp_device.h': No such file or directory
   Interface.cpp
+c:\users\naor\source\repos\shacharmarkovich\bankingsystem\wyshost\wyslibrary\pavphandler.h(42): fatal error C1083: Cannot open include file: 'intel_pavp_device.h': No such file or directory
   DelayLoader.cpp
   AuthHelper.cpp
+c:\users\naor\source\repos\shacharmarkovich\bankingsystem\wyshost\wyslibrary\authhelper.h(44): fatal error C1083: Cannot open include file: 'CryptoHelper.h': No such file or directory
   Generating Code...
-AuthHelper.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/OPT:LBR' specification
-     Creating library C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.lib and object C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.exp
-CertHelper_d.lib(CertHelper.obj) : warning LNK4099: PDB 'CertHelper2.pdb' was not found with 'CertHelper_d.lib(CertHelper.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CertHelper2.pdb'; linking object as if no debug info
-CertHelper_d.lib(CryptoHelper.obj) : warning LNK4099: PDB 'CertHelper2.pdb' was not found with 'CertHelper_d.lib(CryptoHelper.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CertHelper2.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(bignumber.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(bignumber.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(crypt_data_gen.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(crypt_data_gen.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(ecpf.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(ecpf.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(intel_auxiliary_device.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(intel_auxiliary_device.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(intel_pavp_device.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(intel_pavp_device.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(pf.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(pf.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-CryptoDataGen_d.lib(sigma_crypto_utils.obj) : warning LNK4099: PDB 'CryptoDataGen.pdb' was not found with 'CryptoDataGen_d.lib(sigma_crypto_utils.obj)' or at 'C:\DALsdk\Samples\WysSample\WysHost\Debug\CryptoDataGen.pdb'; linking object as if no debug info
-  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.dll
-  WysLibrary.vcxproj -> C:\DALsdk\Samples\WysSample\WysHost\Debug\WysLibrary.pdb (Full PDB)

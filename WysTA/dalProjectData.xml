@@ -2,16 +2,16 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 <entry key="com.dal.pedal.dalMainClassPackage">WYS</entry>
-<entry key="com.dal.pedal.vsVersion">VS2010</entry>
+<entry key="com.dal.pedal.vsVersion">VS2015</entry>
 <entry key="com.dal.pedal.userTarget"/>
 <entry key="com.dal.pedal.dalRunOption">VS</entry>
-<entry key="com.dal.pedal.dalSupportedPlatfom">9</entry>
-<entry key="com.dal.pedal.dalUUID">4c507bdd-2853-417b-98ee-630275d44809</entry>
-<entry key="com.dal.pedal.dalProjectVersion">DAL_5</entry>
+<entry key="com.dal.pedal.dalSupportedPlatfom">19</entry>
+<entry key="com.dal.pedal.dalUUID">4c507bdd-2853-417b-98ee-630275d44822</entry>
+<entry key="com.dal.pedal.dalProjectVersion">DAL_8</entry>
 <entry key="com.dal.pedal.dalMainClassName">WYS</entry>
 <entry key="com.dal.pedal.userBuildScript"/>
-<entry key="com.dal.pedal.dalHostProjectLocation">C:\DALsdk\Samples\WysSample\WysHost</entry>
-<entry key="com.dal.pedal.dalActiveManifest">9</entry>
+<entry key="com.dal.pedal.dalHostProjectLocation">C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost</entry>
+<entry key="com.dal.pedal.dalActiveManifest">19</entry>
 <entry key="com.dal.pedal.dalHostProjectName">WysSample</entry>
 <entry key="com.dal.pedal.dalInitBuffer"/>
 </properties>

@@ -1,0 +1,15 @@
+applet.id: 4c507bdd-2853-417b-98ee-630275d44822
+applet.name: WYS
+applet.vendor: Intel
+applet.version: 1.0
+security.version: 1
+applet.heap.size: 100000
+applet.platform: CSE
+applet.api.level: 8
+applet.description: This is the WYS applet
+applet.entry_class: WYS.WYS
+applet.flash.quota: 0
+applet.debug.enable: true
+applet.timeout: 20000
+applet.written.by.intel: true
+applet.access.control: 92

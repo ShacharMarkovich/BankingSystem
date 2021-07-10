@@ -23,9 +23,15 @@ namespace WysHost
         {
             if (usernameTextBox.Text != "" && passwordTextBox.Text != "")
                 MessageBox.Show("TODO: send data to DAL for encryption\nTODO: than send to server");
+                
             else
                 MessageBox.Show("Please fill both username & password!");
             new AccountPage().ShowDialog();
+        }
+
+        private void testBtn_Click(object sender, EventArgs e)
+        {
+            Connector c = Connector.getInstance();
         }
     }
 }

@@ -23,7 +23,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <ApiLevel>ME100</ApiLevel>
+    <ApiLevel>ME115</ApiLevel>
     <DalTemplate />
     <UseOfAtl>Static</UseOfAtl>
     <CharacterSet>Unicode</CharacterSet>
@@ -62,7 +62,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME11.5\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>JHI.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2015</AdditionalLibraryDirectories>
@@ -71,15 +71,15 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Amulet|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>$(DALsdk)\Platforms\ME9.5\SWComponents\JHI;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(DALsdk)\Platforms\ME9.5\SWComponents\JHI;$(SolutionDir)WysResources\PAVP_EPID_SDK\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WYSAMULET;IPTDEBUG;WIN32;_DEBUG;_WINDOWS;_USRDLL;IPTWYS_EXPORTS;UNICODE;AMULET;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;Shlwapi.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>legacy_stdio_definitions.lib;Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;Shlwapi.lib;$(DALsdk)\Platforms\ME11.5\SWComponents\JHI\jhi.lib;CertHelper_d.lib;CryptoDataGen_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>JHI.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
-      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\lib\VS2015</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(JAVA_HOME)lib;$(SolutionDir)WysResources\PAVP_EPID_SDK\lib\VS2015</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
@@ -88,7 +88,7 @@
       <AdditionalIncludeDirectories>$(DALsdk)\Platforms\ME9.5\SWComponents\JHI;$(SolutionDir)..\..\WysResources\PAVP_EPID_SDK\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME10.0\SWComponents\JHI\jhi.lib;CryptoDataGen.lib;CertHelper.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Msimg32.lib;Ws2_32.lib;d3d9.lib;dxva2.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;Crypt32.Lib;Bcrypt.lib;wintrust.lib;$(DALsdk)\Platforms\ME11.5\SWComponents\JHI\jhi.lib;CryptoDataGen.lib;CertHelper.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DelayLoadDLLs>JHI.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
       <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>

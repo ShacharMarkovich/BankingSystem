@@ -4,7 +4,7 @@ import socket
 import sys
 from typing import Tuple
 
-import Cipher
+from Cipher import Cipher
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 COMMANDS = {}
@@ -25,13 +25,14 @@ class Communication:
         simple c'tor
         """
         self.conn_socket = None
-        self.shared_key = None
+        self.cipher = Cipher()  # gen session (=symmetric) key & iv:
 
     def communicate(self):
         """
         user communication's handler
         """
         code = 1
+        logging.info("start communicate!")
         while code != self.EXIT:
             enc_data = self.conn_socket.recv(self.MAX_MSG)
 
@@ -54,25 +55,30 @@ class Communication:
         try:
             listen_socket.bind(self.ADDR)
         except socket.error:
-            print("port is already taken")
+            logging.error("port is already taken")
             exit()
         else:
             listen_socket.listen()
         while True:
             self.conn_socket, addr = listen_socket.accept()
-            logging.info('Connected by ' + addr)
+            logging.info('Connected by ' + str(addr))
             self.keys_exchange()
             self.communicate()
             self.conn_socket.close()
 
     def keys_exchange(self) -> None:
         """
-        performing secure D.H. key exchange, using long term key.
+        handler key symmetric and asymmetric keys with client
         """
-        enc_user_pubkey = self.conn_socket.recv(self.MAX_MSG)
-        self.shared_key = Cipher.gen_secret_key(enc_user_pubkey)
+        # gen asymmetric public key:
+        exponent = self.conn_socket.recv(self.MAX_MSG)
+        modulus = self.conn_socket.recv(self.MAX_MSG)
+        self.cipher.gen_rsa_pubkey(modulus, exponent)
+        print(f"exponent, modulus = {exponent, modulus}")
 
-        self.conn_socket.send(Cipher.get_enc_pubkey())
+        # encrypt the session key & iv with the asymmetric public key and send to client:
+        enc_shared_key = self.cipher.rsa_encrypt_key()
+        self.conn_socket.send(enc_shared_key)
 
     def decrypt(self, enc_data: bytes) -> str:
         """
@@ -81,7 +87,7 @@ class Communication:
         :param enc_data: the given msg
         :return: decrypt msg
         """
-        return Cipher.encrypt_decrypt(self.shared_key, enc_data).decode()
+        return self.cipher.decrypt(enc_data).decode()
 
     def parse(self, data: str) -> Tuple[int, dict]:
         """
@@ -93,8 +99,6 @@ class Communication:
         code, params = data.split(self.SEP, 1)
         return int(code), json.loads(params)
 
-        pass
-
     def encrypt(self, ans: str) -> bytes:
         """
         encrypt the given msg
@@ -102,7 +106,7 @@ class Communication:
         :param ans: the given answer
         :return: encrypted answer
         """
-        return Cipher.encrypt_decrypt(self.shared_key, ans.encode())
+        return self.cipher.encrypt(ans.encode())
 
 
 if __name__ == "__main__":

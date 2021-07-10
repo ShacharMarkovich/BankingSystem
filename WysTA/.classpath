@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/DALsdk/Platforms/ME10.0/PlatformTools/dal.jar">
+	<classpathentry kind="lib" path="C:/DALsdk/Platforms/ME11.5/PlatformTools/dal.jar">
 		<attributes>
-			<attribute name="javadoc_location" value="file:C:\DALsdk\Platforms\ME10.0\Javadoc\"/>
+			<attribute name="javadoc_location" value="file:C:\DALsdk\Platforms\ME11.5\Javadoc\"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin/bin"/>

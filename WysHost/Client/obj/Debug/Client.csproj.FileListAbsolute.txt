@@ -1,0 +1,5 @@
+C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\bin\Debug\Client.dll
+C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\bin\Debug\Client.pdb
+C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Debug\Client.csprojResolveAssemblyReference.cache
+C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Debug\Client.dll
+C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Debug\Client.pdb

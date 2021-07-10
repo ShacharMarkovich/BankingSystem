@@ -5,7 +5,13 @@ namespace WysHost
 {
     public partial class MainWin : Form
     {
-        public MainWin() { InitializeComponent(); }
+        static public Connector connector;
+        public MainWin()
+        {
+            InitializeComponent();
+            connector = Connector.getInstance();
+            connector.KeyExchange();
+        }
 
         private void loginBtm_Click(object sender, EventArgs e) => new LoginWin().ShowDialog();
 

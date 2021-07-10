@@ -21,6 +21,8 @@ package WYS;
 
 
 import com.intel.crypto.Random;
+import com.intel.crypto.RsaAlg;
+import com.intel.crypto.SymmetricBlockCipherAlg;
 import com.intel.langutil.ArrayUtils;
 import com.intel.langutil.TypeConverter;
 import com.intel.util.IntelApplet;
@@ -35,11 +37,22 @@ import com.intel.util.DebugPrint;
 
 public class WYS extends IntelApplet 
 {
+	static final int COMMAND_TEST_CONNECTION = 3;
 	static final int COMMAND_ID_CHECK_INPUT_STATUS = 1;
 	static final int COMMAND_ID_GET_OTP = 2;
-		
-	private StandardWindow m_standardWindow;
+	static final int COMMAND_GET_MODULUS = 5;
+	static final int COMMAND_GET_EXPONENT = 6;
+	static final int COMMAND_GET_ENCRYPTED_SESSION_KEY = 7;
+
+	static final int RESPONSE_TEST_CONNECTION = 0;
+	static final int RESPONSE_OK = 1;
+
 	
+	private StandardWindow m_standardWindow;
+	private RsaAlg rsa = null;
+	private SymmetricBlockCipherAlg aes_cbc = null;
+	private byte[] modulus;
+	private byte[] exponent;
 	private final byte[] PIN = {1, 7, 1, 7};
 	
 	/*
@@ -55,8 +68,23 @@ public class WYS extends IntelApplet
 	 * treated similarly by the VM by sending "cancel" error code to the SW application).
 	 */
 	public int onInit(byte[] request) {
-		DebugPrint.printString("WYS applet entered");
 
+		DebugPrint.printString("WYS applet entered");
+		if (rsa == null) {
+			rsa = RsaAlg.create();
+			rsa.generateKeys((short)(128));
+			
+			modulus = new byte[rsa.getModulusSize()];
+			exponent = new byte[rsa.getPublicExponentSize()];
+			rsa.getKey(modulus,(short) 0, exponent,(short)0);
+			rsa.setPaddingScheme(RsaAlg.PAD_TYPE_OAEP);
+			DebugPrint.printBuffer(exponent);
+		}
+		
+		if(aes_cbc == null) {
+			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_DES_CBC);
+		}
+		
 		m_standardWindow = StandardWindow.getInstance();
 		
 		return APPLET_SUCCESS;
@@ -72,7 +100,8 @@ public class WYS extends IntelApplet
 	 */
 	public int invokeCommand(int commandID, byte[] request) {
 		int res = IntelApplet.APPLET_ERROR_NOT_SUPPORTED;
-		
+		DebugPrint.printString("commandID:");
+		DebugPrint.printInt(commandID);
 		switch (commandID)
 		{
 			case StandardWindow.STANDARD_COMMAND_ID:
@@ -108,7 +137,45 @@ public class WYS extends IntelApplet
 				DebugPrint.printString("Getting OTP...");
 				res = getOtp(); 
 				break;
-			
+			case COMMAND_TEST_CONNECTION:
+				
+				if(request != null)
+				{
+					DebugPrint.printString("Received buffer:");
+					DebugPrint.printBuffer(request);
+				}
+				
+				final byte[] myResponse = { 'O', 'K' };
+				setResponse(myResponse, 0, myResponse.length);
+				res = RESPONSE_TEST_CONNECTION;
+				break;
+				////////////////////////////////////////////////
+			case COMMAND_GET_MODULUS:
+				DebugPrint.printString("send modulus, the size is:");
+				DebugPrint.printInt(modulus.length);
+				setResponse(modulus,0,modulus.length);
+				res = RESPONSE_OK;
+				break;
+			case COMMAND_GET_EXPONENT:
+				DebugPrint.printString("send exponent, the size is:");
+				DebugPrint.printInt(exponent.length);
+				setResponse(exponent,0,exponent.length);
+				res = RESPONSE_OK;
+				break;
+			case COMMAND_GET_ENCRYPTED_SESSION_KEY:
+				DebugPrint.printString("got shared key and iv, the data is:");
+				
+				byte[] data = new byte[32 + 16/*len(publickey) + len(iv)*/];
+				
+				rsa.decryptComplete(request, (short)0, (short)data.length, data,(short) 0);
+				DebugPrint.printString(new String(data));
+				res = RESPONSE_OK;
+				aes_cbc.setKey(data, (short)0, (short)32);
+				aes_cbc.setIV(data, (short)32, (short)16);
+				
+				setResponse(data, 0, data.length);
+				break;
+				//////////////////////////////////////////////
 			default:
 				break;
 		}
