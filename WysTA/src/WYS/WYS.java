@@ -40,10 +40,14 @@ public class WYS extends IntelApplet
 	static final int COMMAND_TEST_CONNECTION = 3;
 	static final int COMMAND_ID_CHECK_INPUT_STATUS = 1;
 	static final int COMMAND_ID_GET_OTP = 2;
+	
 	static final int COMMAND_GET_MODULUS = 5;
 	static final int COMMAND_GET_EXPONENT = 6;
 	static final int COMMAND_GET_ENCRYPTED_SESSION_KEY = 7;
 
+	static final int COMMAND_ENCRYPT= 8;
+	static final int COMMAND_DECRYPT= 9;
+	
 	static final int RESPONSE_TEST_CONNECTION = 0;
 	static final int RESPONSE_OK = 1;
 
@@ -54,7 +58,7 @@ public class WYS extends IntelApplet
 	private byte[] modulus;
 	private byte[] exponent;
 	private final byte[] PIN = {1, 7, 1, 7};
-	
+	final byte[] defualtResponse = { 'O', 'K' };
 	/*
 	 * This method will be called by the VM when a new session is opened to the Trusted Application 
 	 * and this Trusted Application instance is being created to handle the new session.
@@ -82,7 +86,7 @@ public class WYS extends IntelApplet
 		}
 		
 		if(aes_cbc == null) {
-			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_DES_CBC);
+			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_PBIND_AES_128_CBC);
 		}
 		
 		m_standardWindow = StandardWindow.getInstance();
@@ -145,11 +149,10 @@ public class WYS extends IntelApplet
 					DebugPrint.printBuffer(request);
 				}
 				
-				final byte[] myResponse = { 'O', 'K' };
-				setResponse(myResponse, 0, myResponse.length);
+				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
 				res = RESPONSE_TEST_CONNECTION;
 				break;
-				////////////////////////////////////////////////
+				
 			case COMMAND_GET_MODULUS:
 				setResponse(modulus,0,modulus.length);
 				DebugPrint.printString("get modulus");
@@ -168,12 +171,31 @@ public class WYS extends IntelApplet
 
 				aes_cbc.setKey(data, (short)0, (short)16);
 				DebugPrint.printString("setKey");
-				aes_cbc.setIV(data, (short)16, (short)8);
+				aes_cbc.setIV(data, (short)16, (short)16);
 				DebugPrint.printString("setIV");
-
-				setResponse(data, 0, data.length);
+				
+				setResponse(data, 0, data.length); // return OK
 				break;
-				//////////////////////////////////////////////
+			
+			case COMMAND_ENCRYPT:
+				byte[] encMsg = new byte[4096];
+				DebugPrint.printString(new String(request));
+				aes_cbc.encryptComplete(request, (short)0, (short)request.length, encMsg, (short)0);
+				DebugPrint.printString("encryptComplete");
+				DebugPrint.printInt(encMsg.length);
+				setResponse(encMsg, 0, encMsg.length);
+				res = RESPONSE_OK;
+				break;
+			
+			case COMMAND_DECRYPT:
+				byte[] decMsg = new byte[4096];				
+				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
+				DebugPrint.printString("decryptComplete");
+				DebugPrint.printInt(decMsg.length);
+				setResponse(decMsg, 0, decMsg.length);
+				res = RESPONSE_OK;
+				break;
+				
 			default:
 				break;
 		}

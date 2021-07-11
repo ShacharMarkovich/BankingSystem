@@ -31,7 +31,9 @@ C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\WysHost.exe
 C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\WysHost.pdb
 C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\Client.dll
 C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\JhiSharp.dll
+C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\Newtonsoft.Json.dll
 C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\Client.pdb
+C:\DALProjects\BankingSystem\WysHost\WysHost\bin\Amulet\Newtonsoft.Json.xml
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.csprojResolveAssemblyReference.cache
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.AccountPage.resources
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.Form1.resources

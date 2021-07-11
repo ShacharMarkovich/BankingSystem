@@ -1,14 +1,14 @@
 import hashlib
 import secrets
 
-from sqlalchemy import Column, Integer, String, Boolean, Date
+from sqlalchemy import Column, Integer, String, Boolean, Date, Float
 
-from server import Base
+from SqlDataBase import SqlDataBase
 
 
-class Account(Base):
+class Account(SqlDataBase.Base):
     __tablename__ = "Account"
-    accId = Column(Integer, primary_key=True, autoincrement=True)
+    accId = Column(Integer, primary_key=True, autoincrement=10000)
     full_name = Column(String(25))
     username = Column(String(25))
     hash_password = Column(String(64))
@@ -21,6 +21,7 @@ class Account(Base):
     street = Column(String(25))
     house_num = Column(Integer)
     is_marry = Column(Boolean)
+    balance = Column(Float)
 
     def __init__(self, full_name: str, username: str, hash_password: str, email: str, birthday, gender: str,
                  country: str, city: str, street: str, house_num: int, is_marry: bool):
@@ -47,3 +48,26 @@ class Account(Base):
         self.street = street
         self.house_num = house_num
         self.is_marry = is_marry
+        self.balance = 0.0
+
+    def to_json(self):
+        """
+        return Account as JSON
+
+        :return: Account as JSON
+        """
+        return {
+            "full_name": self.full_name,
+            "username": self.username,
+            "hash_password": self.hash_password,
+            "email": self.email,
+            "birthday": self.birthday,
+            "gender": self.gender,
+            "country": self.country,
+            "city": self.city,
+            "street": self.street,
+            "house_num": self.house_num,
+            "is_marry": self.is_marry,
+            "balance": self.balance,
+            "accNum": self.accId
+        }

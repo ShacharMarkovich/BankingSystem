@@ -15,6 +15,8 @@ namespace WysHost
         public int HouseNum { get; set; }
         public string Gender { get; set; }
         public bool IsMarry { get; set; }
+        public float Balance { get; set; }
+        public float accNum { get; set; }
 
         public override string ToString() => "Account: " + Username + " " + Password;
     }

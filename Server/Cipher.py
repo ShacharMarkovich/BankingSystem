@@ -11,8 +11,10 @@ class Cipher:
         """
         c'tor for new Cipher object
         """
-        self.shared_key = secrets.token_hex(16).encode()
+        self.shared_key = secrets.token_hex(8).encode()
         self.iv = secrets.token_hex(8).encode()
+        print(self.shared_key)
+        print(self.iv)
         self.rsa_pubkey = None
 
     def cipher_obj(self):

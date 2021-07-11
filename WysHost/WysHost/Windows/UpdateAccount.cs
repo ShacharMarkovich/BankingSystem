@@ -11,9 +11,12 @@ namespace WysHost
 {
     public partial class UpdateAccount : Form
     {
-        public UpdateAccount()
+        Account _currAccount;
+
+        public UpdateAccount(Account acc)
         {
             InitializeComponent();
+            _currAccount = acc;
 
             showPassBtn.BackgroundImage = Image.FromFile("../../Images/show.jpg");
             showPassBtn.BackgroundImageLayout = ImageLayout.Stretch;

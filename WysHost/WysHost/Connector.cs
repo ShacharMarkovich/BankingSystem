@@ -1,28 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using Client;
 using Intel.Dal;
-using System.Threading;
 using System.Windows.Forms;
 
 namespace WysHost
 {
-    public enum cmdID
-    {
-        getModulus = 5,
-        getExponent = 6,
-        sendEncryptedSession = 7,
-    }
     public class Connector
     {
         private Client.Client _client;
-        private static Connector theInstance = null;
         private Jhi jhi;
         private JhiSession session;
         private string appletID = "4c507bdd-2853-417b-98ee-630275d44822";
-
+        private string SEP = "|";
 
         private byte[] _modulus = null;
         public byte[] Modulus
@@ -48,12 +38,30 @@ namespace WysHost
             private set { _exponent = value; }
         }
 
-
-        public static Connector getInstance()
+        private static Connector theInstance = null;
+        public static Connector getInstance
         {
-            if (theInstance == null)
-                theInstance = new Connector();
-            return theInstance;
+            get
+            {
+                if (theInstance == null)
+                    theInstance = new Connector();
+                return theInstance;
+            }
+        }
+
+        /// <summary>
+        /// send & receive the data to/from server, after encrypt/decrypt by the symmetric key in TA
+        /// </summary>
+        /// <param name="opCode">command opcode</param>
+        /// <param name="data">data to send</param>
+        /// <returns>server respone</returns>
+        public string SendAndRecvServer(serverOpcode opCode, string data)
+        {
+            byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(opCode.ToString() + SEP + data), cmdID.encrypt);
+            MessageBox.Show("SendAndRecvDAL encrypt work!");
+            _client.send(encMsg);
+            byte[] encRes = _client.recv();
+            return Encoding.UTF8.GetString(SendAndRecvDAL(encRes, cmdID.decrypt));
         }
 
         /// <summary>
@@ -77,30 +85,47 @@ namespace WysHost
             byte[] initBuffer = new byte[] { };
             Console.WriteLine("Opening session.");
             jhi.CreateSession(appletID, JHI_SESSION_FLAGS.None, initBuffer, out session);
-            _client = Client.Client.getInstance();
+
+            _client = Client.Client.getInstance;
         }
 
+        /// <summary>
+        /// Keys Exchange with the server and TA
+        /// </summary>
         public void KeyExchange()
         {
             byte[] encSharedKey = _client.KeyExchange(Exponent, Modulus);
-            MessageBox.Show(UTF32Encoding.UTF8.GetString(SendDAL(encSharedKey, cmdID.sendEncryptedSession)));
+            MessageBox.Show(Encoding.UTF8.GetString((SendAndRecvDAL(encSharedKey, cmdID.sendEncryptedSession))));
+
         }
 
-        public byte[] getModulusFromDAL() => SendDAL(null, cmdID.getModulus);
+        /// <summary>
+        /// Get generated modulus from TA
+        /// </summary>
+        /// <returns>modulus</returns>
+        private byte[] getModulusFromDAL() => SendAndRecvDAL(null, cmdID.getModulus);
 
-        public byte[] getExponentFromDAL() => SendDAL(null, cmdID.getExponent);
+        /// <summary>
+        /// Get generated exponent from TA
+        /// </summary>
+        /// <returns>exponent</returns>
+        private byte[] getExponentFromDAL() => SendAndRecvDAL(null, cmdID.getExponent);
 
-        public byte[] SendDAL(byte[] data, cmdID cmdId)
+        /// <summary>
+        /// send & receive the data to/from TA
+        /// </summary>
+        /// <param name="sendBuff">buffer to send</param>
+        /// <param name="cmdId">command number</param>
+        /// <returns>TA respone</returns>
+        private byte[] SendAndRecvDAL(byte[] sendBuff, cmdID cmdId)
         {
-            byte[] sendBuff = data;
-            byte[] recvBuff = new byte[2000];
+            byte[] recvBuff = new byte[4096];
             int responseCode;
-            Console.WriteLine("Performing send and receive.");
+            Console.WriteLine("[!] Performing send and receive.");
             jhi.SendAndRecv2(session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
-            Console.Out.WriteLine("Response buffer is " + UTF32Encoding.UTF8.GetString(recvBuff));
-            Thread.Sleep(1000);
             return recvBuff;
         }
+
         ~Connector()
         {
             //Close session

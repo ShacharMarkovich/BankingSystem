@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Client;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -67,7 +69,14 @@ namespace WysHost
         {
             Account newAcc = GetNewAccountData();
             if (CheckNewAccountData(newAcc))
-                MessageBox.Show("TODO: Handler ledal data!");
+            {
+                newAcc.Password = Utils.sha256_hash(newAcc.Password);
+                string jsonString = JsonConvert.SerializeObject(newAcc); // len around 300
+                string respone = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString);
+                MessageBox.Show(respone);
+
+                accountBindingSource.Clear();
+            }
             else
                 MessageBox.Show("not all data had been writen legally!\nFix it!");
         }

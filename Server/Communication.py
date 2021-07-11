@@ -5,9 +5,9 @@ import sys
 from typing import Tuple
 
 from Cipher import Cipher
+from SqlDataBase import SqlDataBase
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-COMMANDS = {}
 
 
 class Communication:
@@ -26,6 +26,8 @@ class Communication:
         """
         self.conn_socket = None
         self.cipher = Cipher()  # gen session (=symmetric) key & iv:
+        self.db = SqlDataBase()
+        self.commands = {"login": self.login, "register": self.register}
 
     def communicate(self):
         """
@@ -35,16 +37,20 @@ class Communication:
         logging.info("start communicate!")
         while code != self.EXIT:
             enc_data = self.conn_socket.recv(self.MAX_MSG)
-            print(f"recv: {enc_data}")
+            print(f"recv: {enc_data, len(enc_data)}")
             data = self.decrypt(enc_data)
             try:
                 code, params = self.parse(data)
+                print(f"got from client:\n[!](code, params) = {code, params}")
             except:
+                print("[!] error")
                 pass  # TODO: return error msg - msg not in format
             else:
-                logging.info(f"got from user: {code}, {data}")
-                ans = COMMANDS[code](params)
-                self.conn_socket.send(self.encrypt(ans))
+                ans = self.commands[code](params)
+                print(ans)
+                to_send = self.encrypt(ans)
+                print("[!] len(self.encrypt(ans)) = ", len(to_send))
+                self.conn_socket.send(to_send)
 
     def start(self):
         """
@@ -74,11 +80,19 @@ class Communication:
         exponent = self.conn_socket.recv(self.MAX_MSG)
         modulus = self.conn_socket.recv(self.MAX_MSG)
         self.cipher.gen_rsa_pubkey(modulus, exponent)
-        print(f"exponent, modulus = {exponent, modulus}")
 
         # encrypt the session key & iv with the asymmetric public key and send to client:
         enc_shared_key = self.cipher.rsa_encrypt_key()
         self.conn_socket.send(enc_shared_key)
+
+    def encrypt(self, ans: str) -> bytes:
+        """
+        encrypt the given msg
+
+        :param ans: the given answer
+        :return: encrypted answer
+        """
+        return self.cipher.encrypt(ans.encode())
 
     def decrypt(self, enc_data: bytes) -> str:
         """
@@ -89,7 +103,7 @@ class Communication:
         """
         return self.cipher.decrypt(enc_data).decode()
 
-    def parse(self, data: str) -> Tuple[int, dict]:
+    def parse(self, data: str) -> Tuple[str, dict]:
         """
         Parse coming data to cmd code and params
 
@@ -97,16 +111,24 @@ class Communication:
         :return: parse data
         """
         code, params = data.split(self.SEP, 1)
-        return int(code), json.loads(params)
+        return code, json.loads(params)
 
-    def encrypt(self, ans: str) -> bytes:
-        """
-        encrypt the given msg
+    def login(self, params: dict):
+        account = self.db.login(params["username"], params["hash_password"])
+        if account:
+            print(f"1|{json.dumps(account)}")
+            return f"1|{json.dumps(account)}"
+        else:
+            return "0|username or password are wrong"
 
-        :param ans: the given answer
-        :return: encrypted answer
-        """
-        return self.cipher.encrypt(ans.encode())
+    def register(self, params: dict):
+        return "1|account added successfully" if self.db.add_new_account(params["FullName"], params["Username"],
+                                                                         params["Password"], params["Email"],
+                                                                         params["BirthDay"], params["Gender"],
+                                                                         params["Country"], params["City"],
+                                                                         params["Street"], params["HouseNum"], params[
+                                                                             "IsMarry"]) \
+            else "0|username or email already in used"
 
 
 if __name__ == "__main__":

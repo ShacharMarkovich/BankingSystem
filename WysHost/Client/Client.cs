@@ -7,16 +7,22 @@ namespace Client
 {
     public class Client
     {
-        private static Client theInstance = null;
-        public static Client getInstance()
-        {
-            if (theInstance == null)
-                theInstance = new Client();
-            return theInstance;
-        }
         Socket _sender;
         IPEndPoint _remoteEP;
+        private const int MAX = 4096;
 
+        private static Client theInstance = null;
+        public static Client getInstance
+        {
+            get
+            {
+                if (theInstance == null)
+                    theInstance = new Client();
+                return theInstance;
+            }
+        }
+        
+        #region Socket Communication Functions
         /// <summary>
         /// Open socket with server, starting the comminication.
         /// </summary>
@@ -39,6 +45,10 @@ namespace Client
             Console.WriteLine("[!] Socket connected to {0}", _sender.RemoteEndPoint.ToString());
         }
 
+        /// <summary>
+        /// send the given msg to the server
+        /// </summary>
+        /// <param name="msg">msg to send</param>
         public void send(byte[] msg)
         {
             try
@@ -52,19 +62,12 @@ namespace Client
             }
         }
 
-        public byte[] KeyExchange(byte[] exponent, byte[] modulus)
-        {
-            send(exponent);
-            send(modulus);
-            return getEncryptedSession();
-        }
-        public byte[] getEncryptedSession()
-        {
-            return recv(1024);
-        }
-
-
-        public byte[] recv(int count)
+        /// <summary>
+        /// receive `count` bytes from server
+        /// </summary>
+        /// <param name="count">data bytes' amonut to receive</param>
+        /// <returns>the received buffer</returns>
+        public byte[] recv(int count = MAX)
         {
             byte[] buffer = new byte[count];
             try
@@ -79,12 +82,29 @@ namespace Client
             return buffer;
         }
 
-
-        public void Shutdown()
+        /// <summary>
+        /// Close the connection with the server
+        /// </summary>
+        ~Client()
         {
             // Release the socket.    
             _sender.Shutdown(SocketShutdown.Both);
             _sender.Close();
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Keys Exchange with the server
+        /// </summary>
+        /// <param name="exponent">asymmetric crypto algoritm's exponent</param>
+        /// <param name="modulus">asymmetric crypto algoritm's modulus</param>
+        /// <returns>shared key encrypted by the fit public key which made from given exponent and modulus</returns>
+        public byte[] KeyExchange(byte[] exponent, byte[] modulus)
+        {
+            send(exponent);
+            send(modulus);
+            return recv(1024);
         }
     }
 }

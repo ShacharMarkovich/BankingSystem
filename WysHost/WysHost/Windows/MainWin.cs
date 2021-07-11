@@ -9,7 +9,7 @@ namespace WysHost
         public MainWin()
         {
             InitializeComponent();
-            connector = Connector.getInstance();
+            connector = Connector.getInstance;
             connector.KeyExchange();
         }
 
