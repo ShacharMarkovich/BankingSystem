@@ -35,6 +35,7 @@
             this.loginBtn = new System.Windows.Forms.Button();
             this.retBtn = new System.Windows.Forms.Button();
             this.instLbl = new System.Windows.Forms.Label();
+            this.showPassBtn = new System.Windows.Forms.Button();
             passwordLabel = new System.Windows.Forms.Label();
             usernameLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -101,11 +102,21 @@
             this.instLbl.TabIndex = 27;
             this.instLbl.Text = "Login:";
             // 
+            // showPassBtn
+            // 
+            this.showPassBtn.Location = new System.Drawing.Point(312, 71);
+            this.showPassBtn.Name = "showPassBtn";
+            this.showPassBtn.Size = new System.Drawing.Size(23, 23);
+            this.showPassBtn.TabIndex = 28;
+            this.showPassBtn.UseVisualStyleBackColor = true;
+            this.showPassBtn.Click += new System.EventHandler(this.showPassBtn_Click);
+            // 
             // LoginWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(359, 201);
+            this.Controls.Add(this.showPassBtn);
             this.Controls.Add(this.instLbl);
             this.Controls.Add(this.retBtn);
             this.Controls.Add(this.loginBtn);
@@ -127,5 +138,6 @@
         private System.Windows.Forms.Button loginBtn;
         private System.Windows.Forms.Button retBtn;
         private System.Windows.Forms.Label instLbl;
+        private System.Windows.Forms.Button showPassBtn;
     }
 }

@@ -22,6 +22,7 @@ package WYS;
 
 import com.intel.crypto.Random;
 import com.intel.crypto.RsaAlg;
+import com.intel.crypto.SequentialCipher;
 import com.intel.crypto.SymmetricBlockCipherAlg;
 import com.intel.langutil.ArrayUtils;
 import com.intel.langutil.TypeConverter;
@@ -82,11 +83,10 @@ public class WYS extends IntelApplet
 			exponent = new byte[rsa.getPublicExponentSize()];
 			rsa.getKey(modulus,(short) 0, exponent,(short)0);
 			rsa.setPaddingScheme(RsaAlg.PAD_TYPE_OAEP);
-			DebugPrint.printBuffer(exponent);
 		}
 		
 		if(aes_cbc == null) {
-			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_PBIND_AES_128_CBC);
+			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_CBC);
 		}
 		
 		m_standardWindow = StandardWindow.getInstance();
@@ -104,8 +104,6 @@ public class WYS extends IntelApplet
 	 */
 	public int invokeCommand(int commandID, byte[] request) {
 		int res = IntelApplet.APPLET_ERROR_NOT_SUPPORTED;
-		DebugPrint.printString("commandID:");
-		DebugPrint.printInt(commandID);
 		switch (commandID)
 		{
 			case StandardWindow.STANDARD_COMMAND_ID:
@@ -163,26 +161,24 @@ public class WYS extends IntelApplet
 				DebugPrint.printString("get exponent");
 				res = RESPONSE_OK;
 				break;
+			
 			case COMMAND_GET_ENCRYPTED_SESSION_KEY:
 				byte[] data = new byte[modulus.length];
 				rsa.decryptComplete(request, (short)0, (short)modulus.length, data,(short) 0);
-				DebugPrint.printString("dec shared key");
-				res = RESPONSE_OK;
-
+								
 				aes_cbc.setKey(data, (short)0, (short)16);
-				DebugPrint.printString("setKey");
 				aes_cbc.setIV(data, (short)16, (short)16);
-				DebugPrint.printString("setIV");
 				
-				setResponse(data, 0, data.length); // return OK
+				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
+				res = RESPONSE_OK;
+				DebugPrint.printString("dec shared key compete");
 				break;
 			
 			case COMMAND_ENCRYPT:
 				byte[] encMsg = new byte[4096];
-				DebugPrint.printString(new String(request));
+				
 				aes_cbc.encryptComplete(request, (short)0, (short)request.length, encMsg, (short)0);
 				DebugPrint.printString("encryptComplete");
-				DebugPrint.printInt(encMsg.length);
 				setResponse(encMsg, 0, encMsg.length);
 				res = RESPONSE_OK;
 				break;
@@ -191,7 +187,6 @@ public class WYS extends IntelApplet
 				byte[] decMsg = new byte[4096];				
 				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
 				DebugPrint.printString("decryptComplete");
-				DebugPrint.printInt(decMsg.length);
 				setResponse(decMsg, 0, decMsg.length);
 				res = RESPONSE_OK;
 				break;

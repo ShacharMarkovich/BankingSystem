@@ -1,23 +1,56 @@
 import hashlib
-
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+import secrets
+import sqlite3
 
 
 class SqlDataBase(object):
-    engine = create_engine('sqlite:///college.db', echo=True)
-    session = sessionmaker(bind=engine)()
-    Base = declarative_base()
-
+    """
+    Responsible for maintaining the SQL server session
+    """
     def __init__(self):
-        self.login_acc = None
+        """
+        c'tor, open DB, add tables if not exists
+        """
+        self.con = sqlite3.connect('BankingSystem.db')
+        self.cur = self.con.cursor()
+        self.cur.execute("""
+        CREATE TABLE IF NOT EXISTS Account (
+            accId INTEGER NOT NULL,
+            full_name VARCHAR(25),
+            username VARCHAR(25),
+            hash_password VARCHAR(64),
+            salt VARCHAR(8),
+            email VARCHAR(25),
+            birthday VARCHAR(10),
+            gender VARCHAR(25),
+            country VARCHAR(25),
+            city VARCHAR(25),
+            street VARCHAR(25),
+            house_num INTEGER,
+            is_marry BOOLEAN,
+            balance FLOAT,
+            PRIMARY KEY (accId),
+            CHECK (is_marry IN (0, 1))
+            )""")
+        self.con.commit()
+        self.account = None
 
-    def validate_username(self, username):
-        return self.session.query(models.Account).filter_by(username=username).first() is not None
+    def exists(self, username, email):
+        """
+        check if the given username and email are in the DB, unless they much to the current login account
 
-    def validate_email(self, email):
-        return self.session.query(models.Account).filter_by(email=email).first() is not None
+        :param username: username to check
+        :param email: email to check
+        :return: whether or not exists
+        """
+        if self.account is not None and (username == self.account["Username"] or email == self.account["Email"]):
+            return False
+
+        for _username, _email in self.cur.execute(
+                f"""SELECT username,email FROM Account WHERE username='{username}' or email='{email}'"""):
+            if _username == username or _email == email:
+                return True
+        return False
 
     def add_new_account(self, full_name: str, username: str, hash_password: str, email: str, birthday, gender: str,
                         country: str, city: str, street: str, house_num: int, is_marry: bool) -> bool:
@@ -26,11 +59,15 @@ class SqlDataBase(object):
 
         :return: if succeeded
         """
-        if self.validate_email(email) and self.validate_username(username):
-            new_acc = models.Account(full_name, username, hash_password, email, birthday, gender, country, city, street,
-                                     house_num, is_marry)
-            self.session.add(new_acc)
-            self.session.commit()
+        if not self.exists(username, email):
+            salt = secrets.token_hex(4)
+            hash_password = hashlib.sha256((hash_password + salt).encode()).hexdigest()
+            self.cur.execute(f"""INSERT INTO Account(full_name, username, hash_password, salt, email, birthday, gender,
+                                                    country, city, street, house_num, is_marry, balance)
+                                    VALUES ('{full_name}', '{username}', '{hash_password}', '{salt}', '{email}', 
+                                            '{birthday[:10]}', '{gender}', '{country}', '{city}', '{street}', {house_num},
+                                            {is_marry}, 0.0)""")
+            self.con.commit()
             return True
 
         return False
@@ -43,12 +80,42 @@ class SqlDataBase(object):
         :param password: given password
         :return: is succeed - return account as json, else - return None
         """
-        account = self.session.query(models.Account).filter_by(username=username).first()
-        if account:
-            if account.hash_password == hashlib.sha256((password + account.salt).encode()).hexdigest():
-                self.login_acc = account
-                return account.to_json()
+        for _salt, real_hash_password in self.cur.execute(
+                f"SELECT salt, hash_password from Account where username='{username}' LIMIT 1"):
+            if _salt is not None and real_hash_password is not None and real_hash_password == hashlib.sha256(
+                    (password + _salt).encode()).hexdigest():
+                for accNum, full_name, username, hash_password, salt, email, birthday, gender, country, city, street, house_num, is_marry, balance in self.cur.execute(
+                        f"select * from Account where username='{username}' LIMIT 1"):
+                    self.account = {"FullName": full_name, "Username": username, "hash_password": hash_password,
+                                    "Email": email, "BirthDay": birthday, "Gender": gender, "Country": country,
+                                    "City": city, "Street": street, "HouseNum": house_num, "IsMarry": is_marry,
+                                    "Balance": balance, "accNum": accNum}
+            return self.account
+
         return None
 
+    def logout(self):
+        """
+        logout from user
+        """
+        self.account = None
 
-import models
+    @property
+    def is_login(self):
+        return self.account is not None
+
+    def update_account(self, accNum: int, full_name: str, username: str, email: str, birthday, gender: str,
+                       country: str, city: str, street: str, house_num: int, is_marry: bool) -> bool:
+        """
+        update curr account with new details
+
+        :return: if succeed
+        """
+        if not self.exists(username, email):
+            self.cur.execute(f"""UPDATE Account SET full_name='{full_name}', username='{username}', email='{email}',
+                        birthday='{birthday[:10]}', gender='{gender}', country='{country}', city='{city}',
+                        street='{street}', house_num={house_num}, is_marry={is_marry}
+                        WHERE accID = {accNum}""")
+            self.con.commit()
+            return True
+        return False

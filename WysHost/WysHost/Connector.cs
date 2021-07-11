@@ -8,36 +8,7 @@ namespace WysHost
 {
     public class Connector
     {
-        private Client.Client _client;
-        private Jhi jhi;
-        private JhiSession session;
-        private string appletID = "4c507bdd-2853-417b-98ee-630275d44822";
-        private string SEP = "|";
-
-        private byte[] _modulus = null;
-        public byte[] Modulus
-        {
-            get
-            {
-                if (_modulus == null)
-                    _modulus = getModulusFromDAL();
-                return _modulus;
-            }
-            private set { _modulus = value; }
-        }
-
-        private byte[] _exponent = null;
-        public byte[] Exponent
-        {
-            get
-            {
-                if (_exponent == null)
-                    _exponent = getExponentFromDAL();
-                return _exponent;
-            }
-            private set { _exponent = value; }
-        }
-
+        #region Singelton properties
         private static Connector theInstance = null;
         public static Connector getInstance
         {
@@ -48,21 +19,49 @@ namespace WysHost
                 return theInstance;
             }
         }
+        #endregion
+
+        #region TA variables
+        private string appletID = "4c507bdd-2853-417b-98ee-630275d44822";
+        private Jhi jhi;
+        private JhiSession session;
 
         /// <summary>
-        /// send & receive the data to/from server, after encrypt/decrypt by the symmetric key in TA
+        /// Get generated modulus from TA
         /// </summary>
-        /// <param name="opCode">command opcode</param>
-        /// <param name="data">data to send</param>
-        /// <returns>server respone</returns>
-        public string SendAndRecvServer(serverOpcode opCode, string data)
+        /// <returns>modulus</returns>
+        public byte[] Modulus
         {
-            byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(opCode.ToString() + SEP + data), cmdID.encrypt);
-            MessageBox.Show("SendAndRecvDAL encrypt work!");
-            _client.send(encMsg);
-            byte[] encRes = _client.recv();
-            return Encoding.UTF8.GetString(SendAndRecvDAL(encRes, cmdID.decrypt));
+            get
+            {
+                if (_modulus == null)
+                    _modulus = SendAndRecvDAL(null, cmdID.getModulus);
+                return _modulus;
+            }
+            private set { _modulus = value; }
         }
+        private byte[] _modulus = null;
+
+        /// <summary>
+        /// Get generated exponent from TA
+        /// </summary>
+        /// <returns>exponent</returns>
+        public byte[] Exponent
+        {
+            get
+            {
+                if (_exponent == null)
+                    _exponent = SendAndRecvDAL(null, cmdID.getExponent);
+                return _exponent;
+            }
+            private set { _exponent = value; }
+        }
+        private byte[] _exponent = null;
+        #endregion
+
+        private Client.Client _client;
+        private string SEP = "|";
+
 
         /// <summary>
         /// Create Session with Dal applet
@@ -95,21 +94,28 @@ namespace WysHost
         public void KeyExchange()
         {
             byte[] encSharedKey = _client.KeyExchange(Exponent, Modulus);
-            MessageBox.Show(Encoding.UTF8.GetString((SendAndRecvDAL(encSharedKey, cmdID.sendEncryptedSession))));
-
+            SendAndRecvDAL(encSharedKey, cmdID.sendEncryptedSession);
         }
 
         /// <summary>
-        /// Get generated modulus from TA
+        /// send & receive the data to/from server, after encrypt/decrypt by the symmetric key in TA
         /// </summary>
-        /// <returns>modulus</returns>
-        private byte[] getModulusFromDAL() => SendAndRecvDAL(null, cmdID.getModulus);
+        /// <param name="opCode">command opcode</param>
+        /// <param name="data">data to send</param>
+        /// <returns>server respone</returns>
+        public string SendAndRecvServer(serverOpcode opCode, string data)
+        {
+            string padString = Utils.pad(opCode.ToString() + SEP + data); // pading the data
+            byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(padString), cmdID.encrypt); // encrypt by TA
 
-        /// <summary>
-        /// Get generated exponent from TA
-        /// </summary>
-        /// <returns>exponent</returns>
-        private byte[] getExponentFromDAL() => SendAndRecvDAL(null, cmdID.getExponent);
+            // send and receive to/from server:
+            _client.send(encMsg);
+            byte[] encRes = _client.recv();
+
+            // decrypt by TA and unpad response:
+            string padres = Encoding.UTF8.GetString(SendAndRecvDAL(encRes, cmdID.decrypt));
+            return Utils.unpad(padres);
+        }
 
         /// <summary>
         /// send & receive the data to/from TA
@@ -121,20 +127,23 @@ namespace WysHost
         {
             byte[] recvBuff = new byte[4096];
             int responseCode;
-            Console.WriteLine("[!] Performing send and receive.");
             jhi.SendAndRecv2(session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
             return recvBuff;
         }
 
         ~Connector()
         {
-            //Close session
-            Console.WriteLine("Closing session.");
-            jhi.CloseSession(session);
+            try
+            {
+                //Close session
+                Console.WriteLine("Closing session.");
+                jhi.CloseSession(session);
 
-            //Uninstall the applet
-            Console.WriteLine("Uninstalling applet.");
-            jhi.Uninstall(appletID);
+                //Uninstall the applet
+                Console.WriteLine("Uninstalling applet.");
+                jhi.Uninstall(appletID);
+            }
+            catch (Exception) { }
         }
     }
 }

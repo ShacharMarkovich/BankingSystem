@@ -10,13 +10,15 @@ namespace WysHost
         {
             InitializeComponent();
             _currAccount = acc;
+            balanceLbl.Text = "Balance: " + _currAccount.Balance.ToString();
+            accNumLbl.Text = "Account Number: " + _currAccount.accNum.ToString();
         }
 
         private void updateBtn_Click(object sender, EventArgs e) => new UpdateAccount(_currAccount).ShowDialog();
 
         private void logoutBtn_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("TODO: logout");
+            MainWin.connector.SendAndRecvServer(Client.serverOpcode.logout, null);
             Close();
         }
     }

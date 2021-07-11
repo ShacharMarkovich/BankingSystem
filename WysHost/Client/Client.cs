@@ -7,10 +7,7 @@ namespace Client
 {
     public class Client
     {
-        Socket _sender;
-        IPEndPoint _remoteEP;
-        private const int MAX = 4096;
-
+        #region Singelton properties
         private static Client theInstance = null;
         public static Client getInstance
         {
@@ -21,8 +18,13 @@ namespace Client
                 return theInstance;
             }
         }
-        
-        #region Socket Communication Functions
+        #endregion
+
+        #region Socket Communication Properties
+        Socket _sender;
+        IPEndPoint _remoteEP;
+        private const int MAX = 4096;
+
         /// <summary>
         /// Open socket with server, starting the comminication.
         /// </summary>
@@ -92,7 +94,6 @@ namespace Client
             _sender.Close();
         }
         #endregion
-
 
         /// <summary>
         /// Keys Exchange with the server

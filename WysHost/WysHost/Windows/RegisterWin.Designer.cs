@@ -170,7 +170,7 @@
             // accountBindingSource
             // 
             this.accountBindingSource.DataSource = typeof(WysHost.Account);
-            
+
             // 
             // cityTextBox
             // 
@@ -208,9 +208,7 @@
             // 
             this.genderComboBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.accountBindingSource, "Gender", true));
             this.genderComboBox.FormattingEnabled = true;
-            this.genderComboBox.Items.AddRange(new object[] {
-            "Male",
-            "Female"});
+            this.genderComboBox.Items.AddRange(new object[] { "Male", "Female" });
             this.genderComboBox.Location = new System.Drawing.Point(157, 197);
             this.genderComboBox.Name = "genderComboBox";
             this.genderComboBox.Size = new System.Drawing.Size(200, 21);

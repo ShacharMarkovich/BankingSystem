@@ -27,30 +27,8 @@ class Communication:
         self.conn_socket = None
         self.cipher = Cipher()  # gen session (=symmetric) key & iv:
         self.db = SqlDataBase()
-        self.commands = {"login": self.login, "register": self.register}
-
-    def communicate(self):
-        """
-        user communication's handler
-        """
-        code = 1
-        logging.info("start communicate!")
-        while code != self.EXIT:
-            enc_data = self.conn_socket.recv(self.MAX_MSG)
-            print(f"recv: {enc_data, len(enc_data)}")
-            data = self.decrypt(enc_data)
-            try:
-                code, params = self.parse(data)
-                print(f"got from client:\n[!](code, params) = {code, params}")
-            except:
-                print("[!] error")
-                pass  # TODO: return error msg - msg not in format
-            else:
-                ans = self.commands[code](params)
-                print(ans)
-                to_send = self.encrypt(ans)
-                print("[!] len(self.encrypt(ans)) = ", len(to_send))
-                self.conn_socket.send(to_send)
+        self.commands = {"login": self.login, "register": self.register, "logout": self.logout,
+                         "updateData": self.update_data}
 
     def start(self):
         """
@@ -71,6 +49,26 @@ class Communication:
             self.keys_exchange()
             self.communicate()
             self.conn_socket.close()
+
+    def communicate(self):
+        """
+        user communication's handler
+        """
+        code = 1
+        logging.info("start communicate!")
+        while code != self.EXIT:
+            enc_data = self.conn_socket.recv(self.MAX_MSG)
+            data = self.decrypt(enc_data)
+            try:
+                code, params = self.parse(data)
+                logging.info(f"got from client:\n(code, params) = {code, params}")
+            except:
+                logging.info("[!] error")
+                return  # TODO: return error msg - msg not in format
+            else:
+                ans = self.commands[code](params)
+                logging.info(ans)
+                self.conn_socket.send(self.encrypt(ans))
 
     def keys_exchange(self) -> None:
         """
@@ -113,17 +111,53 @@ class Communication:
         code, params = data.split(self.SEP, 1)
         return code, json.loads(params)
 
-    def login(self, params: dict):
+    def login(self, params: dict) -> str:
+        """
+        try login with given username and password
+
+        :param params: dict of username and password
+        :return: fit msg
+        """
         account = self.db.login(params["username"], params["hash_password"])
         if account:
-            print(f"1|{json.dumps(account)}")
             return f"1|{json.dumps(account)}"
         else:
             return "0|username or password are wrong"
 
-    def register(self, params: dict):
+    def register(self, params: dict) -> str:
+        """
+        try create new account with given params
+        :param params: new account params' as dict
+        :return: fit msg
+        """
         return "1|account added successfully" if self.db.add_new_account(params["FullName"], params["Username"],
                                                                          params["Password"], params["Email"],
+                                                                         params["BirthDay"], params["Gender"],
+                                                                         params["Country"], params["City"],
+                                                                         params["Street"], params["HouseNum"], params[
+                                                                             "IsMarry"]) \
+            else "0|username or email already in used"
+
+    def logout(self, _):
+        """
+        commit logout from current login account
+        :param _: unused param
+        :return: succeed msg
+        """
+        self.db.logout()
+        return "1"
+
+    def update_data(self, params: dict) -> str:
+        """
+        try update data of given account data with the new params
+
+        :param params: new params
+        :return: fit msg
+        """
+        if not self.db.is_login:
+            return "0|Please login first"
+        return "1|account update successfully" if self.db.update_account(params["accNum"], params["FullName"],
+                                                                         params["Username"], params["Email"],
                                                                          params["BirthDay"], params["Gender"],
                                                                          params["Country"], params["City"],
                                                                          params["Street"], params["HouseNum"], params[

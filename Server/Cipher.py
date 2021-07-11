@@ -3,18 +3,18 @@ import secrets
 
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
-from Crypto.Util.Padding import unpad, pad
 
 
 class Cipher:
+    END = b'}'
+    PAD = b'*'
+
     def __init__(self):
         """
         c'tor for new Cipher object
         """
         self.shared_key = secrets.token_hex(8).encode()
         self.iv = secrets.token_hex(8).encode()
-        print(self.shared_key)
-        print(self.iv)
         self.rsa_pubkey = None
 
     def cipher_obj(self):
@@ -32,7 +32,7 @@ class Cipher:
         :param enc_msg: the encrypted data
         :return:
         """
-        return unpad(self.cipher_obj().decrypt(enc_msg), AES.block_size)
+        return self.unpad(self.cipher_obj().decrypt(enc_msg))
 
     def encrypt(self, msg: bytes) -> bytes:
         """
@@ -41,7 +41,14 @@ class Cipher:
         :param msg: the msg
         :return: encrypt msg
         """
-        return self.cipher_obj().encrypt(pad(msg, AES.block_size))
+        return self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
+
+    def pad(self, data: bytes, size: int) -> bytes:
+        pad_len = size - len(data) % size
+        return data + self.PAD * pad_len
+
+    def unpad(self, padded_data):
+        return padded_data[:padded_data.rfind(self.END) + 1]
 
     @staticmethod
     def byte2int(num: bytes) -> int:

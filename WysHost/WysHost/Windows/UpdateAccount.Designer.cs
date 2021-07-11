@@ -41,10 +41,9 @@
             System.Windows.Forms.Label usernameLabel;
             this.instLbl = new System.Windows.Forms.Label();
             this.retBtn = new System.Windows.Forms.Button();
-            this.clearBtn = new System.Windows.Forms.Button();
             this.submitBtn = new System.Windows.Forms.Button();
-            this.showPassBtn = new System.Windows.Forms.Button();
             this.birthDayDateTimePicker = new System.Windows.Forms.DateTimePicker();
+            this.accountBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.cityTextBox = new System.Windows.Forms.TextBox();
             this.countryTextBox = new System.Windows.Forms.TextBox();
             this.emailTextBox = new System.Windows.Forms.TextBox();
@@ -55,7 +54,6 @@
             this.passwordTextBox = new System.Windows.Forms.TextBox();
             this.streetTextBox = new System.Windows.Forms.TextBox();
             this.usernameTextBox = new System.Windows.Forms.TextBox();
-            this.accountBindingSource = new System.Windows.Forms.BindingSource(this.components);
             birthDayLabel = new System.Windows.Forms.Label();
             cityLabel = new System.Windows.Forms.Label();
             countryLabel = new System.Windows.Forms.Label();
@@ -179,16 +177,6 @@
             this.retBtn.UseVisualStyleBackColor = true;
             this.retBtn.Click += new System.EventHandler(this.retBtn_Click);
             // 
-            // clearBtn
-            // 
-            this.clearBtn.Location = new System.Drawing.Point(131, 378);
-            this.clearBtn.Name = "clearBtn";
-            this.clearBtn.Size = new System.Drawing.Size(75, 23);
-            this.clearBtn.TabIndex = 50;
-            this.clearBtn.Text = "Clear";
-            this.clearBtn.UseVisualStyleBackColor = true;
-            this.clearBtn.Click += new System.EventHandler(this.clearBtn_Click);
-            // 
             // submitBtn
             // 
             this.submitBtn.Location = new System.Drawing.Point(37, 378);
@@ -199,15 +187,6 @@
             this.submitBtn.UseVisualStyleBackColor = true;
             this.submitBtn.Click += new System.EventHandler(this.submitBtn_Click);
             // 
-            // showPassBtn
-            // 
-            this.showPassBtn.Location = new System.Drawing.Point(312, 109);
-            this.showPassBtn.Name = "showPassBtn";
-            this.showPassBtn.Size = new System.Drawing.Size(23, 23);
-            this.showPassBtn.TabIndex = 52;
-            this.showPassBtn.UseVisualStyleBackColor = true;
-            this.showPassBtn.Click += new System.EventHandler(this.showPassBtn_Click);
-            // 
             // birthDayDateTimePicker
             // 
             this.birthDayDateTimePicker.DataBindings.Add(new System.Windows.Forms.Binding("Value", this.accountBindingSource, "BirthDay", true));
@@ -215,6 +194,10 @@
             this.birthDayDateTimePicker.Name = "birthDayDateTimePicker";
             this.birthDayDateTimePicker.Size = new System.Drawing.Size(200, 20);
             this.birthDayDateTimePicker.TabIndex = 10;
+            // 
+            // accountBindingSource
+            // 
+            this.accountBindingSource.DataSource = typeof(WysHost.Account);
             // 
             // cityTextBox
             // 
@@ -254,6 +237,7 @@
             this.genderComboBox.FormattingEnabled = true;
             this.genderComboBox.Location = new System.Drawing.Point(106, 186);
             this.genderComboBox.Name = "genderComboBox";
+            this.genderComboBox.Items.AddRange(new object[] { "Male", "Female" });
             this.genderComboBox.Size = new System.Drawing.Size(200, 21);
             this.genderComboBox.TabIndex = 12;
             // 
@@ -278,6 +262,7 @@
             // passwordTextBox
             // 
             this.passwordTextBox.DataBindings.Add(new System.Windows.Forms.Binding("Text", this.accountBindingSource, "Password", true));
+            this.passwordTextBox.Enabled = false;
             this.passwordTextBox.Location = new System.Drawing.Point(106, 111);
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.Size = new System.Drawing.Size(200, 20);
@@ -298,10 +283,6 @@
             this.usernameTextBox.Name = "usernameTextBox";
             this.usernameTextBox.Size = new System.Drawing.Size(200, 20);
             this.usernameTextBox.TabIndex = 4;
-            // 
-            // accountBindingSource
-            // 
-            this.accountBindingSource.DataSource = typeof(WysHost.Account);
             // 
             // UpdateAccount
             // 
@@ -329,9 +310,7 @@
             this.Controls.Add(this.streetTextBox);
             this.Controls.Add(usernameLabel);
             this.Controls.Add(this.usernameTextBox);
-            this.Controls.Add(this.showPassBtn);
             this.Controls.Add(this.retBtn);
-            this.Controls.Add(this.clearBtn);
             this.Controls.Add(this.submitBtn);
             this.Controls.Add(this.instLbl);
             this.Name = "UpdateAccount";
@@ -346,9 +325,7 @@
 
         private System.Windows.Forms.Label instLbl;
         private System.Windows.Forms.Button retBtn;
-        private System.Windows.Forms.Button clearBtn;
         private System.Windows.Forms.Button submitBtn;
-        private System.Windows.Forms.Button showPassBtn;
         private System.Windows.Forms.BindingSource accountBindingSource;
         private System.Windows.Forms.DateTimePicker birthDayDateTimePicker;
         private System.Windows.Forms.TextBox cityTextBox;

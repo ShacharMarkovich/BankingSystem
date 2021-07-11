@@ -25,6 +25,14 @@ namespace WysHost
 
         private void clearBtn_Click(object sender, EventArgs e) => accountBindingSource.Clear();
 
+
+        #region Validation check functions
+
+        /// <summary>
+        /// check if given Email is in the correct format and with real TLD
+        /// </summary>
+        /// <param name="email">email to check</param>
+        /// <returns>if email is valid</returns>
         bool IsValidEmail(string email)
         {
             try
@@ -38,6 +46,10 @@ namespace WysHost
             }
         }
 
+        /// <summary>
+        /// get the new Account details from GUI
+        /// </summary>
+        /// <returns>the new account</returns>
         private Account GetNewAccountData()
         {
             Account newAcc = new Account();
@@ -58,29 +70,53 @@ namespace WysHost
             return newAcc;
         }
 
+        /// <summary>
+        /// check if each property is valid
+        /// </summary>
+        /// <param name="newAcc">account to check</param>
+        /// <returns>if all properties are valid</returns>
         private bool CheckNewAccountData(Account newAcc)
         {
             return newAcc.Username != "" && newAcc.Password != "" && IsValidEmail(newAcc.Email) && newAcc.FullName != "" &&
                 newAcc.Country != "" && newAcc.City != "" && newAcc.Street != "" && newAcc.HouseNum > 0 &&
                 (newAcc.Gender == "Male" || newAcc.Gender == "Female");
         }
+        #endregion
 
+        /// <summary>
+        /// event handle the creation of new account
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void submitBtn_Click(object sender, EventArgs e)
         {
             Account newAcc = GetNewAccountData();
             if (CheckNewAccountData(newAcc))
             {
+                // Serialize details and send to server and TA
                 newAcc.Password = Utils.sha256_hash(newAcc.Password);
-                string jsonString = JsonConvert.SerializeObject(newAcc); // len around 300
-                string respone = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString);
-                MessageBox.Show(respone);
+                string jsonString = JsonConvert.SerializeObject(newAcc);
+                string response = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString);
 
-                accountBindingSource.Clear();
+                MessageBox.Show(response.Substring(2)); // show response msg
+                if (response[0] == Utils.SUCCESSED)
+                    Close(); // if creation work - close window and move back to main window
+                else // error - clean details
+                {
+                    usernameTextBox.Text = "";
+                    passwordTextBox.Text = "";
+                    emailTextBox.Text = "";
+                }
             }
             else
                 MessageBox.Show("not all data had been writen legally!\nFix it!");
         }
 
+        /// <summary>
+        /// event hadle the clicking on show/hide password
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void showPassBtn_Click(object sender, EventArgs e)
         {
             if (passwordTextBox.UseSystemPasswordChar)

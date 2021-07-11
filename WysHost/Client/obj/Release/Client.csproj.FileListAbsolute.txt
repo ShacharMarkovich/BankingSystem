@@ -12,3 +12,4 @@ C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.dll
 C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.pdb
 C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.dll
 C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.pdb
+C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.csprojResolveAssemblyReference.cache
