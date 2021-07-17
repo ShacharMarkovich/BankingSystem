@@ -19,7 +19,9 @@
 --*/
 package WYS;
 
-
+import com.intel.util.Calendar;
+import com.intel.util.Calendar.*;
+import com.intel.crypto.HashAlg;
 import com.intel.crypto.Random;
 import com.intel.crypto.RsaAlg;
 import com.intel.crypto.SequentialCipher;
@@ -28,7 +30,8 @@ import com.intel.langutil.ArrayUtils;
 import com.intel.langutil.TypeConverter;
 import com.intel.util.IntelApplet;
 import com.intel.util.DebugPrint;
-
+import com.intel.util.FlashStorage;
+import com.intel.util.TimeZone;
 //
 // Implementation of DAL Trusted Application: WYSApplet 
 //
@@ -49,6 +52,8 @@ public class WYS extends IntelApplet
 	static final int COMMAND_ENCRYPT= 8;
 	static final int COMMAND_DECRYPT= 9;
 	
+	static final int COMMAND_GEN_OTP = 10;
+	
 	static final int RESPONSE_TEST_CONNECTION = 0;
 	static final int RESPONSE_OK = 1;
 
@@ -60,6 +65,99 @@ public class WYS extends IntelApplet
 	private byte[] exponent;
 	private final byte[] PIN = {1, 7, 1, 7};
 	final byte[] defualtResponse = { 'O', 'K' };
+	
+	private static int currFlashStorageIndex = 0;
+	private static String loginUserID= "None";
+	
+	//get integer and turn it to byte array by shifting right
+	private byte[] intToByteArray(int v) {
+		return new byte[] {(byte)v, (byte)(v>>8), (byte)(v>>16), (byte)(v >> 24)};
+	}
+	
+	//get byte array and turn it to int by shifting left
+	private int byteArrayToInt(byte[] b) {
+		return ( ((b[3] & 0xFF)<<24) | ((b[2] & 0xFF)<<16) | ((b[1] & 0xFF)<<8) | ((b[0] & 0xFF)<<0) );
+	}
+	
+	private boolean byteArrayEquals(byte[] a, byte[] b)	{
+		int i = 0;
+		while (i < a.length && i < b.length) {
+			if (a[i] != b[i])
+				return false;
+			i += 1;
+		}
+		return true;
+	}
+	
+	/**
+	 * after successful login, save the given new OTP secret key and user id in flash store
+	 * @param data OTP secret key and user id
+	 */
+	private void saveOTPSecret(byte[] data) {
+		String subData = new String(data).substring(5);
+		byte[] id = subData.substring(0,subData.indexOf("|")).getBytes();
+		byte[] otpSecret = subData.substring(subData.indexOf("|") + 1).getBytes();
+		FlashStorage.writeFlashData(currFlashStorageIndex, id, 0, id.length);	
+		currFlashStorageIndex++;
+		FlashStorage.writeFlashData(currFlashStorageIndex, otpSecret, 0, otpSecret.length);	
+		currFlashStorageIndex++;
+		byte[] counter = intToByteArray(0);
+		FlashStorage.writeFlashData(currFlashStorageIndex, counter, 0, counter.length);	
+		currFlashStorageIndex++;	
+	}
+	
+	/**
+	 * Calc current login user's next OTP value 
+	 * @return the OTP value
+	 */
+	private byte[] getOTPSecret() {
+		byte[] userID = new byte[16];
+		int i;
+		for(i = 0; loginUserID.compareTo(new String(userID)) != 0; i += 3)
+			FlashStorage.readFlashData(i, userID, 0);
+		
+		byte[] currOtpKey = new byte[64];
+		FlashStorage.readFlashData(i+1, currOtpKey, 0);
+		byte[] counter = new byte[4];
+		FlashStorage.readFlashData(i+2, counter, 0);
+				
+		byte[] value = chainSeedCounter(counter,currOtpKey);
+		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algo
+		byte[] signature = new byte[256];
+		myHMAC.processComplete(value, (short)0, (short)value.length, signature, (short)0); //hash the text
+		encounter(i+2, byteArrayToInt(counter)+1);
+		
+		DebugPrint.printString("OTP: " + new String(signature));
+		return signature;
+	}
+	
+	/**
+	 * increase the given counter value by one
+	 * @param idex counter index
+	 * @param newCount new value
+	 */
+	private void encounter(int idex, int newCount) {
+		byte[] newC = intToByteArray(newCount);
+		FlashStorage.writeFlashData(idex, newC , 0, newC.length);
+	}
+	
+	private byte[] chainSeedCounter(byte[] count, byte[] secret) {
+		byte[] united = new byte[secret.length + count.length];
+		System.arraycopy(secret, 0, united, 0, secret.length);
+		System.arraycopy(count, 0, united, secret.length, count.length);
+		return united;
+	}
+	
+	private void login(byte[] userData) {
+		String data = new String(userData).substring(13);
+		int startInd = data.indexOf("accNum\": ") + "accNum\": ".length();
+		int endInd = data.indexOf("}");
+		loginUserID =  data.substring(startInd,endInd);
+		DebugPrint.printString(loginUserID);
+	}
+	
+	
+	
 	/*
 	 * This method will be called by the VM when a new session is opened to the Trusted Application 
 	 * and this Trusted Application instance is being created to handle the new session.
@@ -88,6 +186,11 @@ public class WYS extends IntelApplet
 		if(aes_cbc == null) {
 			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_CBC);
 		}
+		
+		
+		// the storages contains account id in even indexes and OTP fit secret key in following index and counter in the next one
+		while (FlashStorage.getFlashDataSize(currFlashStorageIndex) != 0)
+			currFlashStorageIndex += 3;
 		
 		m_standardWindow = StandardWindow.getInstance();
 		
@@ -187,7 +290,23 @@ public class WYS extends IntelApplet
 				byte[] decMsg = new byte[4096];				
 				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
 				DebugPrint.printString("decryptComplete");
-				setResponse(decMsg, 0, decMsg.length);
+				String response = new String(decMsg);
+				if (response.startsWith("1|id:"))
+				{
+					saveOTPSecret(decMsg); // todo: save otp secrete in db
+					decMsg = "1|user created".getBytes();
+					setResponse(decMsg, 0, decMsg.length);
+				}
+				else if (response.startsWith("1|user login:"))
+					login(decMsg);
+				else
+					setResponse(decMsg, 0, decMsg.length);
+				res = RESPONSE_OK;
+				break;
+				
+			case COMMAND_GEN_OTP:
+				byte[] signature = getOTPSecret();
+				setResponse(signature, 0, signature.length);
 				res = RESPONSE_OK;
 				break;
 				

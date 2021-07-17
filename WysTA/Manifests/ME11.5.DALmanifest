@@ -8,8 +8,8 @@ applet.platform: CSE
 applet.api.level: 8
 applet.description: This is the WYS applet
 applet.entry_class: WYS.WYS
-applet.flash.quota: 0
+applet.flash.quota: 255
 applet.debug.enable: true
 applet.timeout: 20000
 applet.written.by.intel: true
-applet.access.control: 92
+applet.access.control: b2

@@ -28,7 +28,7 @@ class Communication:
         self.cipher = Cipher()  # gen session (=symmetric) key & iv:
         self.db = SqlDataBase()
         self.commands = {"login": self.login, "register": self.register, "logout": self.logout,
-                         "updateData": self.update_data}
+                         "updateData": self.update_data, "otp": self.gen_otp}
 
     def start(self):
         """
@@ -120,7 +120,7 @@ class Communication:
         """
         account = self.db.login(params["username"], params["hash_password"])
         if account:
-            return f"1|{json.dumps(account)}"
+            return f"1|user login:{json.dumps(account)}"
         else:
             return "0|username or password are wrong"
 
@@ -130,13 +130,12 @@ class Communication:
         :param params: new account params' as dict
         :return: fit msg
         """
-        return "1|account added successfully" if self.db.add_new_account(params["FullName"], params["Username"],
-                                                                         params["Password"], params["Email"],
-                                                                         params["BirthDay"], params["Gender"],
-                                                                         params["Country"], params["City"],
-                                                                         params["Street"], params["HouseNum"], params[
-                                                                             "IsMarry"]) \
-            else "0|username or email already in used"
+        otp_secret = Cipher.get_secret()
+        acc_id = self.db.add_new_account(params["FullName"], params["Username"], params["Password"], params["Email"],
+                                         params["BirthDay"], params["Gender"], params["Country"], params["City"],
+                                         params["Street"], params["HouseNum"], params["IsMarry"], otp_secret)
+
+        return f"1|id:{acc_id}|{otp_secret}" if acc_id is not None else "0|username or email already in used"
 
     def logout(self, _):
         """
@@ -163,6 +162,15 @@ class Communication:
                                                                          params["Street"], params["HouseNum"], params[
                                                                              "IsMarry"]) \
             else "0|username or email already in used"
+
+    def gen_otp(self):
+        try:
+            secret, counter = self.db.get_otp_data()
+        except ValueError as e:
+            return e
+        else:
+            value = Cipher.get_otp(secret, counter)
+            print(value)
 
 
 if __name__ == "__main__":
