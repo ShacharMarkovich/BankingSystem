@@ -72,27 +72,29 @@ class SqlDataBase(object):
         :param: secret key for OTP
         :return: account id if succeeded
         """
-        if not self.exists(username, email):
-            salt = secrets.token_hex(4)
-            hash_password = hashlib.sha256((hash_password + salt).encode()).hexdigest()
-            self.cur.execute(f"""INSERT INTO Account(full_name, username, hash_password, salt, email, birthday, gender,
-                                                country, city, street, house_num, is_marry, balance)
-                                VALUES ('{full_name}', '{username}', '{hash_password}', '{salt}', '{email}', 
-                                        '{birthday[:10]}', '{gender}', '{country}', '{city}', '{street}', {house_num},
-                                        {is_marry}, 0.0)""")
-            self.con.commit()
-            for accId in self.cur.execute(f"""SELECT accId FROM Account where username='{username}' LIMIT 1"""):
-                self.cur.execute(f"""INSERT INTO Secret(accId, secret, counter) VALUES({accId}, '{secret}', 0)""")
-                self.con.commit()
-                return accId
+        if self.exists(username, email):
+            raise ValueError("0|username or email already in used")
 
-    def login(self, username: str, password: str):
+        salt = secrets.token_hex(4)
+        hash_password = hashlib.sha256((hash_password + salt).encode()).hexdigest()
+        self.cur.execute(f"""INSERT INTO Account(full_name, username, hash_password, salt, email, birthday, gender,
+                                            country, city, street, house_num, is_marry, balance)
+                            VALUES ('{full_name}', '{username}', '{hash_password}', '{salt}', '{email}', 
+                                    '{birthday[:10]}', '{gender}', '{country}', '{city}', '{street}', {house_num},
+                                    {is_marry}, 0.0)""")
+        self.con.commit()
+        for accId in self.cur.execute(f"SELECT accId FROM Account where username='{username}' LIMIT 1"):
+            self.cur.execute(f"INSERT INTO Secret(accId, secret, counter) VALUES({accId[0]}, '{secret}', 0)")
+            self.con.commit()
+            return accId[0]
+
+    def login(self, username: str, password: str) -> dict:
         """
         try login to account with given data:
 
         :param username: given username
         :param password: given password
-        :return: is succeed - return account as json, else - return None
+        :return: return account is succeed
         """
         for _salt, real_hash_password in self.cur.execute(
                 f"SELECT salt, hash_password from Account where username='{username}' LIMIT 1"):
@@ -105,8 +107,8 @@ class SqlDataBase(object):
                                     "City": city, "Street": street, "HouseNum": house_num, "IsMarry": is_marry,
                                     "Balance": balance, "accNum": accNum}
                     return self.account
-            return "Unknown error, try again"
-        return "user not found"
+            raise ValueError("0|inner problem, try again")
+        raise ValueError("0|username or password are wrong")
 
     def logout(self):
         """

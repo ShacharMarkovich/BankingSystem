@@ -118,11 +118,12 @@ class Communication:
         :param params: dict of username and password
         :return: fit msg
         """
-        account = self.db.login(params["username"], params["hash_password"])
-        if account:
-            return f"1|user login:{json.dumps(account)}"
+        try:
+            account = self.db.login(params["username"], params["hash_password"])
+        except ValueError as ve:
+            return str(ve)
         else:
-            return "0|username or password are wrong"
+            return f"1|user login:{json.dumps(account)}"
 
     def register(self, params: dict) -> str:
         """
@@ -131,11 +132,15 @@ class Communication:
         :return: fit msg
         """
         otp_secret = Cipher.get_secret()
-        acc_id = self.db.add_new_account(params["FullName"], params["Username"], params["Password"], params["Email"],
-                                         params["BirthDay"], params["Gender"], params["Country"], params["City"],
-                                         params["Street"], params["HouseNum"], params["IsMarry"], otp_secret)
-
-        return f"1|id:{acc_id}|{otp_secret}" if acc_id is not None else "0|username or email already in used"
+        try:
+            acc_id = self.db.add_new_account(params["FullName"], params["Username"], params["Password"],
+                                             params["Email"], params["BirthDay"], params["Gender"], params["Country"],
+                                             params["City"], params["Street"], params["HouseNum"], params["IsMarry"],
+                                             otp_secret)
+        except ValueError as ve:
+            return str(ve)
+        else:
+            return f"1|id:{acc_id}|{otp_secret}"
 
     def logout(self, _):
         """

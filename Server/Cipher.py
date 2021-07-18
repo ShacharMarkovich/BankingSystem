@@ -43,13 +43,16 @@ class Cipher:
         encrypt given msg with a given shared key.
 
         :param msg: the msg
-        :return: encrypt msg
+        :return: encrypted msg
         """
-        return self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
+        c = self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
+        print("after enc:\n[!] ", c)
+        print("after enc len:\n[!] ", len(c))
+        return c
 
     def pad(self, data: bytes, size: int) -> bytes:
         """
-        add the `PAD` char et the end of the given data.
+        add the `PAD` char at the given data's end.
 
         :param data: data to padded
         :param size: block size

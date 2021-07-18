@@ -9,22 +9,24 @@ namespace WysHost
     public class Connector
     {
         #region Singelton properties
-        private static Connector theInstance = null;
+        private static Connector _instance = null;
         public static Connector getInstance
         {
             get
             {
-                if (theInstance == null)
-                    theInstance = new Connector();
-                return theInstance;
+                if (_instance == null)
+                    _instance = new Connector();
+                return _instance;
             }
         }
         #endregion
 
         #region TA variables
-        private string appletID = "4c507bdd-2853-417b-98ee-630275d44822";
-        private Jhi jhi;
-        private JhiSession session;
+        private string _appletID = "4c507bdd-2853-417b-98ee-630275d44822";
+        private string _appletPath = @"C:\DALProjects\BankingSystem\WysTA\bin\WysTA.dalp";
+
+        private Jhi _jhi;
+        private JhiSession _session;
 
         /// <summary>
         /// Get generated modulus from TA
@@ -76,14 +78,13 @@ namespace WysHost
             //The JHI.dll was placed in the bin\Amulet folder during project creation.
             Jhi.DisableDllValidation = true;
 #endif
-            jhi = Jhi.Instance;
-            string appletPath = @"C:\DALProjects\BankingSystem\WysTA\bin\WysTA.dalp";
+            _jhi = Jhi.Instance;
             //Install the applet
             Console.WriteLine("Installing applet.");
-            jhi.Install(appletID, appletPath);
+            _jhi.Install(_appletID, _appletPath);
             byte[] initBuffer = new byte[] { };
             Console.WriteLine("Opening session.");
-            jhi.CreateSession(appletID, JHI_SESSION_FLAGS.None, initBuffer, out session);
+            _jhi.CreateSession(_appletID, JHI_SESSION_FLAGS.None, initBuffer, out _session);
 
             _client = Client.Client.getInstance;
         }
@@ -107,13 +108,13 @@ namespace WysHost
         {
             string padString = Utils.pad(opCode.ToString() + SEP + data); // pading the data
             byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(padString), cmdID.encrypt); // encrypt by TA
-
+            MessageBox.Show("encrypt by TA:" + encMsg.Length.ToString());
             // send and receive to/from server:
             _client.send(encMsg);
-            byte[] encRes = _client.recv();
+            var response = _client.recv();
 
             // decrypt by TA and unpad response:
-            string padres = Encoding.UTF8.GetString(SendAndRecvDAL(encRes, cmdID.decrypt));
+            string padres = Encoding.UTF8.GetString(SendAndRecvDAL(response, cmdID.decrypt));
             return Utils.unpad(padres);
         }
 
@@ -127,7 +128,8 @@ namespace WysHost
         {
             byte[] recvBuff = new byte[4096];
             int responseCode;
-            jhi.SendAndRecv2(session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
+            _jhi.SendAndRecv2(_session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
+            MessageBox.Show("recv from dal msg with len(<4096): " + recvBuff.Length.ToString());
             return recvBuff;
         }
 
@@ -137,11 +139,11 @@ namespace WysHost
             {
                 //Close session
                 Console.WriteLine("Closing session.");
-                jhi.CloseSession(session);
+                _jhi.CloseSession(_session);
 
                 //Uninstall the applet
                 Console.WriteLine("Uninstalling applet.");
-                jhi.Uninstall(appletID);
+                _jhi.Uninstall(_appletID);
             }
             catch (Exception) { }
         }

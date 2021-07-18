@@ -98,11 +98,14 @@ namespace WysHost
                 string jsonString = JsonConvert.SerializeObject(newAcc);
                 string response = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString);
 
-                MessageBox.Show(response.Substring(2)); // show response msg
                 if (response[0] == Utils.SUCCESSED)
+                {
+                    MessageBox.Show(response.Substring(5)); // show response msg
                     Close(); // if creation work - close window and move back to main window
+                }
                 else // error - clean details
                 {
+                    MessageBox.Show(response.Substring(2)); // show response msg
                     usernameTextBox.Text = "";
                     passwordTextBox.Text = "";
                     emailTextBox.Text = "";

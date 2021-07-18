@@ -19,19 +19,15 @@
 --*/
 package WYS;
 
-import com.intel.util.Calendar;
-import com.intel.util.Calendar.*;
 import com.intel.crypto.HashAlg;
 import com.intel.crypto.Random;
 import com.intel.crypto.RsaAlg;
-import com.intel.crypto.SequentialCipher;
 import com.intel.crypto.SymmetricBlockCipherAlg;
 import com.intel.langutil.ArrayUtils;
 import com.intel.langutil.TypeConverter;
 import com.intel.util.IntelApplet;
 import com.intel.util.DebugPrint;
 import com.intel.util.FlashStorage;
-import com.intel.util.TimeZone;
 //
 // Implementation of DAL Trusted Application: WYSApplet 
 //
@@ -93,17 +89,21 @@ public class WYS extends IntelApplet
 	 * after successful login, save the given new OTP secret key and user id in flash store
 	 * @param data OTP secret key and user id
 	 */
-	private void saveOTPSecret(byte[] data) {
-		String subData = new String(data).substring(5);
-		byte[] id = subData.substring(0,subData.indexOf("|")).getBytes();
-		byte[] otpSecret = subData.substring(subData.indexOf("|") + 1).getBytes();
+	private void saveOTPSecret(String data) {
+		DebugPrint.printString("saveOTPSecret(byte[] data)");
+		data = data.substring(5); // remove "1|id:"
+		byte[] id = data.substring(0,data.indexOf("|")).getBytes(); // get new user id
+		byte[] otpSecret = data.substring(data.indexOf("|") + 1).getBytes(); // get OTP secret key
+		
+		// save id, OTP key and counter in FlashStorage: 
 		FlashStorage.writeFlashData(currFlashStorageIndex, id, 0, id.length);	
 		currFlashStorageIndex++;
 		FlashStorage.writeFlashData(currFlashStorageIndex, otpSecret, 0, otpSecret.length);	
 		currFlashStorageIndex++;
 		byte[] counter = intToByteArray(0);
 		FlashStorage.writeFlashData(currFlashStorageIndex, counter, 0, counter.length);	
-		currFlashStorageIndex++;	
+		currFlashStorageIndex++;
+		DebugPrint.printString("finish saveOTPSecret");
 	}
 	
 	/**
@@ -148,12 +148,16 @@ public class WYS extends IntelApplet
 		return united;
 	}
 	
+	/**
+	 * Extract the login user id, in order to know his fit OTP data later
+	 * @param userData
+	 */
 	private void login(byte[] userData) {
-		String data = new String(userData).substring(13);
-		int startInd = data.indexOf("accNum\": ") + "accNum\": ".length();
-		int endInd = data.indexOf("}");
+		String data = new String(userData).substring(13); // remove "1|user login:"
+		int startInd = data.indexOf("accNum\": ") + "accNum\": ".length(); // get user id's starting index 
+		int endInd = data.indexOf("}"); // get user id's ending index
 		loginUserID =  data.substring(startInd,endInd);
-		DebugPrint.printString(loginUserID);
+		DebugPrint.printString("loginUserID: " + loginUserID);
 	}
 	
 	
@@ -287,18 +291,23 @@ public class WYS extends IntelApplet
 				break;
 			
 			case COMMAND_DECRYPT:
-				byte[] decMsg = new byte[4096];				
+				byte[] decMsg = new byte[request.length];
+				DebugPrint.printString("before decryptComplete");
 				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
-				DebugPrint.printString("decryptComplete");
+				DebugPrint.printString("after decryptComplete");
 				String response = new String(decMsg);
 				if (response.startsWith("1|id:"))
 				{
-					saveOTPSecret(decMsg); // todo: save otp secrete in db
+					DebugPrint.printInt(response.length());
+					saveOTPSecret(response);
 					decMsg = "1|user created".getBytes();
 					setResponse(decMsg, 0, decMsg.length);
 				}
 				else if (response.startsWith("1|user login:"))
+				{
 					login(decMsg);
+					setResponse(decMsg, 0, decMsg.length);
+				}
 				else
 					setResponse(decMsg, 0, decMsg.length);
 				res = RESPONSE_OK;

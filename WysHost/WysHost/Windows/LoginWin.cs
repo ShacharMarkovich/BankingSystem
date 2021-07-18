@@ -32,12 +32,12 @@ namespace WysHost
                 var loginData = new { username = usernameTextBox.Text, hash_password = Utils.sha256_hash(passwordTextBox.Text) };
                 string jsonString = JsonConvert.SerializeObject(loginData);
                 string respone = MainWin.connector.SendAndRecvServer(serverOpcode.login, jsonString);
-
+                MessageBox.Show(respone);
                 if (respone[0] == Utils.SUCCESSED)
                 {
                     // Deserialize accuont info
                     var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
-                    Account acc = JsonConvert.DeserializeObject<Account>(respone.Substring(2), dateTimeConverter);
+                    Account acc = JsonConvert.DeserializeObject<Account>(respone.Substring(13), dateTimeConverter);
                     new AccountPage(acc).ShowDialog(); // open fit screen
                 }
                 else

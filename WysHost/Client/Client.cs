@@ -71,10 +71,13 @@ namespace Client
         /// <returns>the received buffer</returns>
         public byte[] recv(int count = MAX)
         {
-            byte[] buffer = new byte[count];
+            byte[] buffer = null;
             try
             {
-                int bufferSize = _sender.Receive(buffer);
+                byte[] tmp = new byte[count];
+                int bufferSize = _sender.Receive(tmp);
+                buffer = new byte[bufferSize];
+                Array.Copy(tmp, 0, buffer, 0, bufferSize);
             }
             catch
             {
