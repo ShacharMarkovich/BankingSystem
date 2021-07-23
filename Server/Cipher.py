@@ -45,10 +45,7 @@ class Cipher:
         :param msg: the msg
         :return: encrypted msg
         """
-        c = self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
-        print("after enc:\n[!] ", c)
-        print("after enc len:\n[!] ", len(c))
-        return c
+        return self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
 
     def pad(self, data: bytes, size: int) -> bytes:
         """

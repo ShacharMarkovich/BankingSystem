@@ -40,15 +40,14 @@ class Communication:
             listen_socket.bind(self.ADDR)
         except socket.error:
             logging.error("port is already taken")
-            exit()
         else:
             listen_socket.listen()
-        while True:
-            self.conn_socket, addr = listen_socket.accept()
-            logging.info('Connected by ' + str(addr))
-            self.keys_exchange()
-            self.communicate()
-            self.conn_socket.close()
+            while True:
+                self.conn_socket, addr = listen_socket.accept()
+                logging.info('Connected by ' + str(addr))
+                self.keys_exchange()
+                self.communicate()
+                self.conn_socket.close()
 
     def communicate(self):
         """
@@ -64,7 +63,7 @@ class Communication:
                 logging.info(f"got from client:\n(code, params) = {code, params}")
             except:
                 logging.info("[!] error")
-                return  # TODO: return error msg - msg not in format
+                self.conn_socket.send(self.encrypt("0|message not in format"))
             else:
                 ans = self.commands[code](params)
                 logging.info(ans)
@@ -140,6 +139,7 @@ class Communication:
         except ValueError as ve:
             return str(ve)
         else:
+            print(f"[!] registration returns: 1|id:{acc_id}|{otp_secret}")
             return f"1|id:{acc_id}|{otp_secret}"
 
     def logout(self, _):

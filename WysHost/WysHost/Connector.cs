@@ -108,7 +108,6 @@ namespace WysHost
         {
             string padString = Utils.pad(opCode.ToString() + SEP + data); // pading the data
             byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(padString), cmdID.encrypt); // encrypt by TA
-            MessageBox.Show("encrypt by TA:" + encMsg.Length.ToString());
             // send and receive to/from server:
             _client.send(encMsg);
             var response = _client.recv();
@@ -129,7 +128,6 @@ namespace WysHost
             byte[] recvBuff = new byte[4096];
             int responseCode;
             _jhi.SendAndRecv2(_session, (int)cmdId, sendBuff, ref recvBuff, out responseCode);
-            MessageBox.Show("recv from dal msg with len(<4096): " + recvBuff.Length.ToString());
             return recvBuff;
         }
 

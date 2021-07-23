@@ -56,7 +56,7 @@ namespace Client
             try
             {
                 // Send the data through the socket.    
-                int bytesSent = _sender.Send(msg);
+                _sender.Send(msg);
             }
             catch
             {

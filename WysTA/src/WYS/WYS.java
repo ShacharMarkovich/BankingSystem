@@ -92,8 +92,13 @@ public class WYS extends IntelApplet
 	private void saveOTPSecret(String data) {
 		DebugPrint.printString("saveOTPSecret(byte[] data)");
 		data = data.substring(5); // remove "1|id:"
-		byte[] id = data.substring(0,data.indexOf("|")).getBytes(); // get new user id
-		byte[] otpSecret = data.substring(data.indexOf("|") + 1).getBytes(); // get OTP secret key
+		DebugPrint.printString("1");
+		int sepInd = data.indexOf("|");
+		DebugPrint.printString("2");
+		byte[] id = data.substring(0,sepInd).getBytes(); // get new user id
+		DebugPrint.printString("3");
+		byte[] otpSecret = data.substring(sepInd + 1).getBytes(); // get OTP secret key
+		DebugPrint.printString("otpSecret is: " + new String(otpSecret));
 		
 		// save id, OTP key and counter in FlashStorage: 
 		FlashStorage.writeFlashData(currFlashStorageIndex, id, 0, id.length);	
@@ -154,7 +159,7 @@ public class WYS extends IntelApplet
 	 */
 	private void login(byte[] userData) {
 		String data = new String(userData).substring(13); // remove "1|user login:"
-		int startInd = data.indexOf("accNum\": ") + "accNum\": ".length(); // get user id's starting index 
+		int startInd = data.indexOf("\"accNum\": ") + "\"accNum\": ".length(); // get user id's starting index 
 		int endInd = data.indexOf("}"); // get user id's ending index
 		loginUserID =  data.substring(startInd,endInd);
 		DebugPrint.printString("loginUserID: " + loginUserID);
@@ -292,13 +297,11 @@ public class WYS extends IntelApplet
 			
 			case COMMAND_DECRYPT:
 				byte[] decMsg = new byte[request.length];
-				DebugPrint.printString("before decryptComplete");
 				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
-				DebugPrint.printString("after decryptComplete");
 				String response = new String(decMsg);
-				if (response.startsWith("1|id:"))
+
+				if (response.startsWith("1|id:")) // registration succeeded msg with accID and secret for OTP
 				{
-					DebugPrint.printInt(response.length());
 					saveOTPSecret(response);
 					decMsg = "1|user created".getBytes();
 					setResponse(decMsg, 0, decMsg.length);
@@ -310,6 +313,7 @@ public class WYS extends IntelApplet
 				}
 				else
 					setResponse(decMsg, 0, decMsg.length);
+				
 				res = RESPONSE_OK;
 				break;
 				

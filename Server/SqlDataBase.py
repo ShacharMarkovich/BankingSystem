@@ -77,12 +77,15 @@ class SqlDataBase(object):
 
         salt = secrets.token_hex(4)
         hash_password = hashlib.sha256((hash_password + salt).encode()).hexdigest()
+        # insert to table:
         self.cur.execute(f"""INSERT INTO Account(full_name, username, hash_password, salt, email, birthday, gender,
                                             country, city, street, house_num, is_marry, balance)
                             VALUES ('{full_name}', '{username}', '{hash_password}', '{salt}', '{email}', 
                                     '{birthday[:10]}', '{gender}', '{country}', '{city}', '{street}', {house_num},
                                     {is_marry}, 0.0)""")
         self.con.commit()
+
+        # get the new account id:
         for accId in self.cur.execute(f"SELECT accId FROM Account where username='{username}' LIMIT 1"):
             self.cur.execute(f"INSERT INTO Secret(accId, secret, counter) VALUES({accId[0]}, '{secret}', 0)")
             self.con.commit()
@@ -94,7 +97,7 @@ class SqlDataBase(object):
 
         :param username: given username
         :param password: given password
-        :return: return account is succeed
+        :return: return account if succeed
         """
         for _salt, real_hash_password in self.cur.execute(
                 f"SELECT salt, hash_password from Account where username='{username}' LIMIT 1"):
