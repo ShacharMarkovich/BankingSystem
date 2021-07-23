@@ -19,6 +19,7 @@
 --*/
 package WYS;
 
+import com.intel.util.*;
 import com.intel.crypto.HashAlg;
 import com.intel.crypto.Random;
 import com.intel.crypto.RsaAlg;
@@ -37,10 +38,11 @@ import com.intel.util.FlashStorage;
 
 public class WYS extends IntelApplet 
 {
-	static final int COMMAND_TEST_CONNECTION = 3;
 	static final int COMMAND_ID_CHECK_INPUT_STATUS = 1;
 	static final int COMMAND_ID_GET_OTP = 2;
+	static final int COMMAND_TEST_CONNECTION = 3;
 	
+	static final int COMMAND_SET_TIME = 4;
 	static final int COMMAND_GET_MODULUS = 5;
 	static final int COMMAND_GET_EXPONENT = 6;
 	static final int COMMAND_GET_ENCRYPTED_SESSION_KEY = 7;
@@ -62,108 +64,7 @@ public class WYS extends IntelApplet
 	private final byte[] PIN = {1, 7, 1, 7};
 	final byte[] defualtResponse = { 'O', 'K' };
 	
-	private static int currFlashStorageIndex = 0;
 	private static String loginUserID= "None";
-	
-	//get integer and turn it to byte array by shifting right
-	private byte[] intToByteArray(int v) {
-		return new byte[] {(byte)v, (byte)(v>>8), (byte)(v>>16), (byte)(v >> 24)};
-	}
-	
-	//get byte array and turn it to int by shifting left
-	private int byteArrayToInt(byte[] b) {
-		return ( ((b[3] & 0xFF)<<24) | ((b[2] & 0xFF)<<16) | ((b[1] & 0xFF)<<8) | ((b[0] & 0xFF)<<0) );
-	}
-	
-	private boolean byteArrayEquals(byte[] a, byte[] b)	{
-		int i = 0;
-		while (i < a.length && i < b.length) {
-			if (a[i] != b[i])
-				return false;
-			i += 1;
-		}
-		return true;
-	}
-	
-	/**
-	 * after successful login, save the given new OTP secret key and user id in flash store
-	 * @param data OTP secret key and user id
-	 */
-	private void saveOTPSecret(String data) {
-		DebugPrint.printString("saveOTPSecret(byte[] data)");
-		data = data.substring(5); // remove "1|id:"
-		DebugPrint.printString("1");
-		int sepInd = data.indexOf("|");
-		DebugPrint.printString("2");
-		byte[] id = data.substring(0,sepInd).getBytes(); // get new user id
-		DebugPrint.printString("3");
-		byte[] otpSecret = data.substring(sepInd + 1).getBytes(); // get OTP secret key
-		DebugPrint.printString("otpSecret is: " + new String(otpSecret));
-		
-		// save id, OTP key and counter in FlashStorage: 
-		FlashStorage.writeFlashData(currFlashStorageIndex, id, 0, id.length);	
-		currFlashStorageIndex++;
-		FlashStorage.writeFlashData(currFlashStorageIndex, otpSecret, 0, otpSecret.length);	
-		currFlashStorageIndex++;
-		byte[] counter = intToByteArray(0);
-		FlashStorage.writeFlashData(currFlashStorageIndex, counter, 0, counter.length);	
-		currFlashStorageIndex++;
-		DebugPrint.printString("finish saveOTPSecret");
-	}
-	
-	/**
-	 * Calc current login user's next OTP value 
-	 * @return the OTP value
-	 */
-	private byte[] getOTPSecret() {
-		byte[] userID = new byte[16];
-		int i;
-		for(i = 0; loginUserID.compareTo(new String(userID)) != 0; i += 3)
-			FlashStorage.readFlashData(i, userID, 0);
-		
-		byte[] currOtpKey = new byte[64];
-		FlashStorage.readFlashData(i+1, currOtpKey, 0);
-		byte[] counter = new byte[4];
-		FlashStorage.readFlashData(i+2, counter, 0);
-				
-		byte[] value = chainSeedCounter(counter,currOtpKey);
-		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algo
-		byte[] signature = new byte[256];
-		myHMAC.processComplete(value, (short)0, (short)value.length, signature, (short)0); //hash the text
-		encounter(i+2, byteArrayToInt(counter)+1);
-		
-		DebugPrint.printString("OTP: " + new String(signature));
-		return signature;
-	}
-	
-	/**
-	 * increase the given counter value by one
-	 * @param idex counter index
-	 * @param newCount new value
-	 */
-	private void encounter(int idex, int newCount) {
-		byte[] newC = intToByteArray(newCount);
-		FlashStorage.writeFlashData(idex, newC , 0, newC.length);
-	}
-	
-	private byte[] chainSeedCounter(byte[] count, byte[] secret) {
-		byte[] united = new byte[secret.length + count.length];
-		System.arraycopy(secret, 0, united, 0, secret.length);
-		System.arraycopy(count, 0, united, secret.length, count.length);
-		return united;
-	}
-	
-	/**
-	 * Extract the login user id, in order to know his fit OTP data later
-	 * @param userData
-	 */
-	private void login(byte[] userData) {
-		String data = new String(userData).substring(13); // remove "1|user login:"
-		int startInd = data.indexOf("\"accNum\": ") + "\"accNum\": ".length(); // get user id's starting index 
-		int endInd = data.indexOf("}"); // get user id's ending index
-		loginUserID =  data.substring(startInd,endInd);
-		DebugPrint.printString("loginUserID: " + loginUserID);
-	}
 	
 	
 	
@@ -196,16 +97,158 @@ public class WYS extends IntelApplet
 			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_CBC);
 		}
 		
-		
-		// the storages contains account id in even indexes and OTP fit secret key in following index and counter in the next one
-		while (FlashStorage.getFlashDataSize(currFlashStorageIndex) != 0)
-			currFlashStorageIndex += 3;
-		
 		m_standardWindow = StandardWindow.getInstance();
 		
 		return APPLET_SUCCESS;
 	}
 	
+	
+	/**
+	 * get integer and turn it to byte array by shifting right
+	 * @param v an integer
+	 * @return byte array
+	 */
+	private byte[] intToByteArray(int v) {
+		return new byte[] {(byte)v, (byte)(v>>8), (byte)(v>>16), (byte)(v >> 24)};
+	}
+	
+	/**
+	 * get byte array and turn it to integer by shifting left 
+	 * @param b integer as byte array
+	 * @return the integer
+	 */
+	private int byteArrayToInt(byte[] b) {
+		return ( ((b[3] & 0xFF)<<24) | ((b[2] & 0xFF)<<16) | ((b[1] & 0xFF)<<8) | ((b[0] & 0xFF)<<0) );
+	}
+	
+	/**
+	 * get to bytes arrays and check if equals
+	 * @param a first array
+	 * @param b second array
+	 * @return if same
+	 */
+	private boolean byteArrayEquals(byte[] a, byte[] b)	{
+		int i = 0;
+		while (i < a.length && i < b.length) {
+			if (a[i] != b[i])
+				return false;
+			i += 1;
+		}
+		return true;
+	}
+	
+	/**
+	 * after successful login, save the given new OTP secret key and user id in flash store
+	 * @param data OTP secret key and user id
+	 */
+	private void saveOTPSecret(String data) {
+		data = data.substring(5); // remove "1|id:"
+		int sepInd = data.indexOf("|");
+		byte[] id = data.substring(0,sepInd).getBytes(); // get new user id
+		
+		byte[] otpSecret = data.substring(sepInd + 1,sepInd + 1+32).getBytes(); // get OTP secret key, length is always 32
+		DebugPrint.printString("id is: " + new String(id));
+		DebugPrint.printString("otpSecret is: " + new String(otpSecret));
+
+		
+		
+		///////////
+		byte[] encMsg = new byte[4096];
+		DebugPrint.printBuffer(encMsg);
+		DebugPrint.printString("a");
+		aes_cbc.encryptComplete(otpSecret, (short)0, (short)otpSecret.length, encMsg,(short) 0);
+		DebugPrint.printBuffer(encMsg);
+		DebugPrint.printString("b");
+
+		DebugPrint.printInt(encMsg.length);
+		DebugPrint.printString("c");
+
+		DebugPrint.printInt((short)otpSecret.length);
+		DebugPrint.printString("d");
+
+		DebugPrint.printInt(otpSecret.length);
+		DebugPrint.printString("e");
+
+		DebugPrint.printInt(new String(encMsg).indexOf("\0"));
+		DebugPrint.printString("f");
+		///////////
+		
+		
+		// TODO: fix it!
+		// save id, OTP key and counter in FlashStorage:
+		FlashStorage.writeFlashData(0, id, 0, id.length);	
+		//currFlashStorageIndex++;
+		DebugPrint.printString("1");
+
+		FlashStorage.writeFlashData(1, otpSecret, 0, otpSecret.length);	
+		//currFlashStorageIndex++;
+		DebugPrint.printString("2");
+		
+		byte[] counter = intToByteArray(0);
+		DebugPrint.printString(new String(counter));
+		// FlashStorage.writeFlashData(currFlashStorageIndex, counter, 0, counter.length);	
+		// currFlashStorageIndex++;
+		DebugPrint.printString("3");
+		DebugPrint.printString("finish saveOTPSecret");
+	}
+	
+	/**
+	 * increase the given counter value by one
+	 * @param idex counter index
+	 * @param newCount new value
+	 */
+	private void encounter(int idex, int newCount) {
+		byte[] newC = intToByteArray(newCount);
+		FlashStorage.writeFlashData(idex, newC , 0, newC.length);
+	}
+	
+	private byte[] chainSeedCounter(byte[] count, byte[] secret) {
+		byte[] united = new byte[secret.length + count.length];
+		System.arraycopy(secret, 0, united, 0, secret.length);
+		System.arraycopy(count, 0, united, secret.length, count.length);
+		return united;
+	}
+	
+	/**
+	 * Calc current login user's next OTP value 
+	 * @return the OTP value
+	 */
+	private byte[] getOTPSecret() {
+		byte[] userID = new byte[16];
+		int i;
+		for(i = 0; loginUserID.compareTo(new String(userID)) != 0; i += 3)
+			FlashStorage.readFlashData(i, userID, 0);
+		
+		byte[] currOtpKey = new byte[64];
+		FlashStorage.readFlashData(i+1, currOtpKey, 0);
+		byte[] counter = new byte[4];
+		FlashStorage.readFlashData(i+2, counter, 0);
+				
+		byte[] value = chainSeedCounter(counter,currOtpKey);
+		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algo
+		byte[] signature = new byte[256];
+		myHMAC.processComplete(value, (short)0, (short)value.length, signature, (short)0); //hash the text
+		encounter(i+2, byteArrayToInt(counter)+1);
+		
+		DebugPrint.printString("OTP: " + new String(signature));
+		return signature;
+	}
+	
+
+	/**
+	 * Extract the login user id, in order to know his fit OTP data later
+	 * @param userData
+	 */
+	private void login(byte[] userData) {
+		String data = new String(userData).substring(13); // remove "1|user login:"
+		int startInd = data.indexOf("\"accNum\": ") + "\"accNum\": ".length(); // get user id's starting index 
+		int endInd = data.indexOf("}"); // get user id's ending index
+		loginUserID =  data.substring(startInd,endInd);
+		DebugPrint.printString("loginUserID: " + loginUserID);
+	}
+	
+	
+
 	/*
 	 * This method will be called by the VM to handle a command sent to this
 	 * Trusted Application instance.
@@ -262,6 +305,13 @@ public class WYS extends IntelApplet
 				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
 				res = RESPONSE_TEST_CONNECTION;
 				break;
+			case COMMAND_SET_TIME:
+				int unix = Integer.parseInt(new String(request));
+				Calendar time = Calendar.getInstance(Calendar.CLOCK_SOURCE_PRTC, new TimeZone());
+				byte[] set_time_info = new byte[256];
+				time.setTime(unix, set_time_info, 0);
+				break;
+				
 				
 			case COMMAND_GET_MODULUS:
 				setResponse(modulus,0,modulus.length);

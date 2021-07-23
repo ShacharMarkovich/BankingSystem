@@ -85,7 +85,7 @@ namespace WysHost
             byte[] initBuffer = new byte[] { };
             Console.WriteLine("Opening session.");
             _jhi.CreateSession(_appletID, JHI_SESSION_FLAGS.None, initBuffer, out _session);
-
+            setTime();
             _client = Client.Client.getInstance;
         }
 
@@ -96,6 +96,16 @@ namespace WysHost
         {
             byte[] encSharedKey = _client.KeyExchange(Exponent, Modulus);
             SendAndRecvDAL(encSharedKey, cmdID.sendEncryptedSession);
+        }
+
+        /// <summary>
+        /// set time to currct time in DAL
+        /// </summary>
+        private void setTime()
+        {
+            int unix = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            byte[] ans = SendAndRecvDAL(Encoding.ASCII.GetBytes(unix.ToString()), cmdID.setTime);
+            MessageBox.Show(Encoding.UTF8.GetString(ans));
         }
 
         /// <summary>

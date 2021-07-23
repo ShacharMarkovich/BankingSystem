@@ -6,7 +6,8 @@ namespace Client
 {
     public enum cmdID // TA op codes
     {
-        getModulus = 5,
+        setTime = 4,
+        getModulus,
         getExponent,
         sendEncryptedSession,
         encrypt,
@@ -30,7 +31,6 @@ namespace Client
         public const char FAIL = '0'; // faliture code
         public const char PAD = '*'; // pading char
         public const int BLOCK_SIZE = 16; // AES block size
-
 
         /// <summary>
         /// hashing given string according to SHA256 algoritm
