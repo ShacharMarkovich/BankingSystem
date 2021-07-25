@@ -20,6 +20,7 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Threading;
+using Client;
 
 namespace WysHost
 {
@@ -106,6 +107,7 @@ namespace WysHost
         /// </summary>
         private void button_submit_Click(object sender, EventArgs e)
         {
+            //int unixT = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds / Utils.INTERVAL;
             bool ret;
             if(getWysImageType() == WysWrapper.WYS_IMAGE_TYPE_CAPTCHA)
             {
@@ -128,6 +130,7 @@ namespace WysHost
                 Marshal.FreeHGlobal(outArr);
 
                 string otp = BitConverter.ToString(otpBytes).Replace("-", "");
+                // TODO: send to encrtpe and then to server, is good msg come back - done, alse, close windows and try again.
                 MessageBox.Show(string.Format("Success! The generated OTP is: {0}", otp));
             }
             else

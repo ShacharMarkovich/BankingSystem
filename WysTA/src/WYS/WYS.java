@@ -72,7 +72,7 @@ public class WYS extends IntelApplet
 	
 	private static String loginUserID= "None";
 	private static byte[] loginUserOTPsecret = new byte[32];
-		
+	private static String _unixTime = null;
 	
 	/*
 	 * This method will be called by the VM when a new session is opened to the Trusted Application 
@@ -341,6 +341,7 @@ public class WYS extends IntelApplet
 			
 			
 			case COMMAND_GET_OTP_SECRET:
+				_unixTime = new String(request); // save unix time
 				byte[] token = getOTPSecret(new String(request)).getBytes();
 				setResponse(token, 0, token.length);
 				res = RESPONSE_OK;
@@ -370,9 +371,9 @@ public class WYS extends IntelApplet
 			DebugPrint.printString("OTP is blocked.");
 			return IntelApplet.APPLET_ERROR_BAD_STATE;
 		}
-		//getOTPSecret(unixTime)
-		byte[] otp = new byte[TypeConverter.INT_BYTE_SIZE];
-		Random.getRandomBytes(otp, (short)0, (short)otp.length);
+		byte[] otp = getOTPSecret(_unixTime).getBytes();
+		//byte[] otp = new byte[TypeConverter.INT_BYTE_SIZE];
+		//Random.getRandomBytes(otp, (short)0, (short)otp.length);
 		
 		setResponse(otp, 0, otp.length);
 		

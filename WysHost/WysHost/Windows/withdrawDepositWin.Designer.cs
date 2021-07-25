@@ -32,6 +32,7 @@
             this.submitBtn = new System.Windows.Forms.Button();
             this._amountInput = new System.Windows.Forms.TextBox();
             this.amountLbl = new System.Windows.Forms.Label();
+            this.panel_wysView = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
             // cancelBtn
@@ -69,11 +70,20 @@
             this.amountLbl.TabIndex = 4;
             this.amountLbl.Text = "Amount:";
             // 
+            // panel_wysView
+            // 
+            this.panel_wysView.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_wysView.Location = new System.Drawing.Point(280, 12);
+            this.panel_wysView.Name = "panel_wysView";
+            this.panel_wysView.Size = new System.Drawing.Size(260, 260);
+            this.panel_wysView.TabIndex = 8;
+            // 
             // withdrawDepositWin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 261);
+            this.ClientSize = new System.Drawing.Size(583, 287);
+            this.Controls.Add(this.panel_wysView);
             this.Controls.Add(this.cancelBtn);
             this.Controls.Add(this.submitBtn);
             this.Controls.Add(this._amountInput);
@@ -91,5 +101,6 @@
         private System.Windows.Forms.Button submitBtn;
         private System.Windows.Forms.TextBox _amountInput;
         private System.Windows.Forms.Label amountLbl;
+        private System.Windows.Forms.Panel panel_wysView;
     }
 }

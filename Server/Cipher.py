@@ -13,7 +13,7 @@ class Cipher:
     END = b'}'
     PAD = b'*'
     OTP_SIZE = 6
-    INTERVAL = 30
+    INTERVAL = 60
 
     def __init__(self):
         """
