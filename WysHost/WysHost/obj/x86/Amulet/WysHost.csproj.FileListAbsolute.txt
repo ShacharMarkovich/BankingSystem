@@ -45,3 +45,5 @@ C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.UpdateAccoun
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.csproj.GenerateResource.Cache
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.exe
 C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.pdb
+C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.Windows.TransferWin.resources
+C:\DALProjects\BankingSystem\WysHost\WysHost\obj\x86\Amulet\WysHost.Windows.withdrawDepositWin.resources

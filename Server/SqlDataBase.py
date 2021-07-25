@@ -39,7 +39,6 @@ class SqlDataBase(object):
             pkey INTEGER NOT NULL,
             accId INTEGER NOT NULL,
             secret VARCHAR(32) NOT NULL,
-            counter INTEGER NOT NULL,
             PRIMARY KEY (pkey),
             FOREIGN KEY (accId) REFERENCES Account(accId)
             )""")
@@ -88,7 +87,7 @@ class SqlDataBase(object):
 
         # get the new account id:
         for accId in self.cur.execute(f"SELECT accId FROM Account where username='{username}' LIMIT 1"):
-            self.cur.execute(f"INSERT INTO Secret(accId, secret, counter) VALUES({accId[0]}, '{secret}', 0)")
+            self.cur.execute(f"INSERT INTO Secret(accId, secret) VALUES({accId[0]}, '{secret}')")
             self.con.commit()
             return accId[0]
         raise ValueError("0|error - please try again")
@@ -141,15 +140,15 @@ class SqlDataBase(object):
             return True
         return False
 
-    def get_otp_data(self) -> tuple:
+    def get_otp_data(self) -> str:
         """
-        get current login user's HOTP key and counter from DB
-        :return: HOTP key and counter
+        get current login user's TOTP key from DB
+        :return: TOTP secret key
         """
         if self.account is None:
-            raise ValueError("not login")
+            raise ValueError("0|not login")
         acc_id = self.account["accNum"]
-        for secret, counter in self.cur.execute(f"SELECT secret, counter FROM Secret WHERE accId = {acc_id} LIMIT 1"):
-            if secret is not None and counter is not None:
-                return secret, counter
-        raise ValueError("Unknown error, try again")
+        for secret in self.cur.execute(f"SELECT secret FROM Secret WHERE accId = {acc_id} LIMIT 1"):
+            if secret is not None:
+                return secret
+        raise ValueError("0|Unknown error, try again")

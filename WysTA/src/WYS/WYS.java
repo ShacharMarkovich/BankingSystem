@@ -42,7 +42,8 @@ public class WYS extends IntelApplet
 	static final int COMMAND_ID_GET_OTP = 2;
 	static final int COMMAND_TEST_CONNECTION = 3;
 	
-	static final int COMMAND_SET_TIME = 4;
+	static final int COMMAND_NOT_USED = 4;
+	
 	static final int COMMAND_GET_MODULUS = 5;
 	static final int COMMAND_GET_EXPONENT = 6;
 	static final int COMMAND_GET_ENCRYPTED_SESSION_KEY = 7;
@@ -51,6 +52,7 @@ public class WYS extends IntelApplet
 	static final int COMMAND_DECRYPT= 9;
 	
 	static final int COMMAND_SET_OTP_SECRET = 10;
+	static final int COMMAND_GET_OTP_SECRET = 11;
 	
 	static final int RESPONSE_TEST_CONNECTION = 0;
 	static final int RESPONSE_OK = 1;
@@ -58,6 +60,7 @@ public class WYS extends IntelApplet
 	static final String SEP = "|";
 	
 	private StandardWindow m_standardWindow;
+	
 	private RsaAlg rsa = null;
 	private SymmetricBlockCipherAlg aes_cbc = null;
 	private SymmetricBlockCipherAlg otp_aes_ecb =null;
@@ -68,9 +71,8 @@ public class WYS extends IntelApplet
 	final byte[] defualtResponse = { 'O', 'K' };
 	
 	private static String loginUserID= "None";
-	private static byte[] loginUserOTPsecret= new byte[32];
-	
-	
+	private static byte[] loginUserOTPsecret = new byte[32];
+		
 	
 	/*
 	 * This method will be called by the VM when a new session is opened to the Trusted Application 
@@ -87,7 +89,7 @@ public class WYS extends IntelApplet
 	public int onInit(byte[] request) {
 
 		DebugPrint.printString("WYS applet entered");
-		// init RSA keys for communication start
+		// create RSA keys for communication start
 		if (rsa == null) {
 			rsa = RsaAlg.create();
 			rsa.generateKeys((short)(128));
@@ -102,20 +104,20 @@ public class WYS extends IntelApplet
 			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_CBC);
 		}
 		
-		// init AES key & IV for encrypt the OTP secret
+		// create AES key & IV for encrypt the OTP secret
 		otp_aes_ecb = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_ECB);
 
 		if (FlashStorage.getFlashDataSize(0) == 0) {
 			Random.getRandomBytes(otpKey, (short)0, (short)16);
-			DebugPrint.printString("new OTP enc key:");
-			DebugPrint.printBuffer(otpKey);
+			DebugPrint.printString("new OTP enc key");
+			// DebugPrint.printBuffer(otpKey);
 			otp_aes_ecb.setKey(otpKey, (short)0, (short)otpKey.length);
 			FlashStorage.writeFlashData(0, otpKey, 0, otpKey.length);
 		}
 		else {
 			FlashStorage.readFlashData(0, otpKey, 0);
-			DebugPrint.printString("OTP enc key:");
-			DebugPrint.printBuffer(otpKey);
+			DebugPrint.printString("OTP enc key");
+			// DebugPrint.printBuffer(otpKey);
 			otp_aes_ecb.setKey(otpKey, (short)0, (short)otpKey.length);
 		}
 		
@@ -154,56 +156,43 @@ public class WYS extends IntelApplet
 		String id = data.substring(0,sepInd); // get new user id
 		byte[] otpSecret = data.substring(sepInd + 1,sepInd + 1+32).getBytes(); // get OTP secret key, length is always 32
 		
-		DebugPrint.printString("id is: " + id);
-		DebugPrint.printString("otpSecret is: " + new String(otpSecret));
+		//DebugPrint.printString("id is: " + id);
+		//DebugPrint.printString("otpSecret is: " + new String(otpSecret));
 		
 		byte[] encOtp = new byte[otpSecret.length];
 		otp_aes_ecb.encryptComplete(otpSecret, (short)0, (short)otpSecret.length, encOtp, (short)0);
-		DebugPrint.printString("1|" + id + SEP +Base32.encode(encOtp));
+		// DebugPrint.printString("1|" + id + SEP +Base32.encode(encOtp));
 		DebugPrint.printString("register finish");
 		return ("1|" + id + SEP +Base32.encode(encOtp)).getBytes();		
 	}
-	
+
 	/**
-	 * increase the given counter value by one
-	 * @param idex counter index
-	 * @param newCount new value
+	 * chain to bytes arrays together
+	 * @param arr1 first array
+	 * @param arr2 second array
+	 * @return chain array
 	 */
-	private void encounter(int idex, int newCount) {
-		byte[] newC = intToByteArray(newCount);
-		FlashStorage.writeFlashData(idex, newC , 0, newC.length);
-	}
-	
-	private byte[] chainSeedCounter(byte[] count, byte[] secret) {
-		byte[] united = new byte[secret.length + count.length];
-		System.arraycopy(secret, 0, united, 0, secret.length);
-		System.arraycopy(count, 0, united, secret.length, count.length);
+	private byte[] chainArrays(byte[] arr1, byte[] arr2) {
+		byte[] united = new byte[arr2.length + arr1.length];
+		System.arraycopy(arr1, 0, united, 0, arr1.length);
+		System.arraycopy(arr2, 0, united, arr1.length, arr2.length);
 		return united;
 	}
 	
 	/**
-	 * Calc current login user's next OTP value 
+	 * Calculate current login user's next OTP value 
 	 * @return the OTP value
 	 */
-	private byte[] getOTPSecret() {
-		byte[] userID = new byte[16];
-		int i;
-		for(i = 0; loginUserID.compareTo(new String(userID)) != 0; i += 3)
-			FlashStorage.readFlashData(i, userID, 0);
+	private String getOTPSecret(String unixTime) {
+		DebugPrint.printString("curr unix time: " + unixTime);
+		DebugPrint.printString("curr OTP secret: " + new String(loginUserOTPsecret));
 		
-		byte[] currOtpKey = new byte[64];
-		FlashStorage.readFlashData(i+1, currOtpKey, 0);
-		byte[] counter = new byte[4];
-		FlashStorage.readFlashData(i+2, counter, 0);
-				
-		byte[] value = chainSeedCounter(counter,currOtpKey);
-		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algo
-		byte[] signature = new byte[256];
-		myHMAC.processComplete(value, (short)0, (short)value.length, signature, (short)0); //hash the text
-		encounter(i+2, byteArrayToInt(counter)+1);
-		
-		DebugPrint.printString("OTP: " + new String(signature));
-		return signature;
+		byte[] token = (new String(loginUserOTPsecret) + unixTime).getBytes();
+		// create TOTP:
+		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algorithm
+		byte[] totp = new byte[40];
+		myHMAC.processComplete(token, (short)0, (short)token.length, totp, (short)0); //hash the text
+		return Base32.encode(totp).substring(0, 6);
 	}
 	
 
@@ -216,7 +205,7 @@ public class WYS extends IntelApplet
 		int startInd = data.indexOf("\"accNum\": ") + "\"accNum\": ".length(); // get user id's starting index 
 		int endInd = data.indexOf("}"); // get user id's ending index
 		loginUserID =  data.substring(startInd,endInd);
-		DebugPrint.printString("loginUserID: " + loginUserID);
+		DebugPrint.printString("login finish - " + loginUserID);
 	}
 	
 	
@@ -277,12 +266,12 @@ public class WYS extends IntelApplet
 				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
 				res = RESPONSE_TEST_CONNECTION;
 				break;
-			case COMMAND_SET_TIME:
+				
+			case -1://COMMAND_SET_TIME:
 				int unix = Integer.parseInt(new String(request));
-				Calendar time = Calendar.getInstance(Calendar.CLOCK_SOURCE_PRTC, new TimeZone());
-				byte[] set_time_info = new byte[256];
-				time.setTime(unix, set_time_info, 0);
-				DebugPrint.printString("set time");
+				//_time = Calendar.getInstance(Calendar.CLOCK_SOURCE_PRTC, new TimeZone());
+				//_time.setTime(unix, _set_time_info, 0);
+				// DebugPrint.printString("set time. interval: " + Integer.toString(unix/30));
 				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
 				res = RESPONSE_TEST_CONNECTION;
 				break;
@@ -300,7 +289,7 @@ public class WYS extends IntelApplet
 				break;
 			
 			case COMMAND_GET_ENCRYPTED_SESSION_KEY:
-				byte[] data = new byte[32];
+				byte[] data = new byte[modulus.length];
 				rsa.decryptComplete(request, (short)0, (short)data.length, data,(short) 0);
 				aes_cbc.setKey(data, (short)0, (short)16);
 				aes_cbc.setIV(data, (short)16, (short)16);
@@ -339,19 +328,22 @@ public class WYS extends IntelApplet
 				
 				res = RESPONSE_OK;
 				break;
-			case COMMAND_SET_OTP_SECRET:
-				DebugPrint.printString("base32: " + new String(request));
+			
+			case COMMAND_SET_OTP_SECRET: // get current login user's OTP secret, encoded in base32, encrypted with otp_aes_ecb  
 				byte[] enc_secret = Base32.decode(new String(request));
 				otp_aes_ecb.decryptComplete(enc_secret, (short)0, (short)enc_secret.length, loginUserOTPsecret, (short)0);
-				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
-				res = RESPONSE_OK;
-				DebugPrint.printString("user secret secret: " + new String(loginUserOTPsecret));
-				break;
+				DebugPrint.printString("user secret set");
 				
-			case -17://COMMAND_GEN_OTP:
-				byte[] signature = getOTPSecret();
-				setResponse(signature, 0, signature.length);
+				setResponse(defualtResponse, 0, defualtResponse.length);
 				res = RESPONSE_OK;
+				break;
+			
+			
+			case COMMAND_GET_OTP_SECRET:
+				byte[] token = getOTPSecret(new String(request)).getBytes();
+				setResponse(token, 0, token.length);
+				res = RESPONSE_OK;
+				DebugPrint.printString("otp generated");
 				break;
 				
 			default:

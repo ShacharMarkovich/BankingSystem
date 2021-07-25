@@ -12,4 +12,4 @@ applet.flash.quota: 4097
 applet.debug.enable: true
 applet.timeout: 20000
 applet.written.by.intel: true
-applet.access.control: be
+applet.access.control: b2

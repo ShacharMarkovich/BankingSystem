@@ -129,11 +129,23 @@
     <Compile Include="Windows\RegisterWin.Designer.cs">
       <DependentUpon>RegisterWin.cs</DependentUpon>
     </Compile>
+    <Compile Include="Windows\TransferWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\TransferWin.Designer.cs">
+      <DependentUpon>TransferWin.cs</DependentUpon>
+    </Compile>
     <Compile Include="Windows\UpdateAccount.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Windows\UpdateAccount.Designer.cs">
       <DependentUpon>UpdateAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\withdrawDepositWin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Windows\withdrawDepositWin.Designer.cs">
+      <DependentUpon>withdrawDepositWin.cs</DependentUpon>
     </Compile>
     <Compile Include="WysWrapper.cs" />
     <EmbeddedResource Include="Windows\AccountPage.resx">
@@ -156,8 +168,14 @@
     <EmbeddedResource Include="Windows\RegisterWin.resx">
       <DependentUpon>RegisterWin.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Windows\TransferWin.resx">
+      <DependentUpon>TransferWin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Windows\UpdateAccount.resx">
       <DependentUpon>UpdateAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Windows\withdrawDepositWin.resx">
+      <DependentUpon>withdrawDepositWin.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Images\WYS.png" />
     <None Include="packages.config" />

@@ -12,7 +12,8 @@ namespace Client
         sendEncryptedSession,
         encrypt,
         decrypt,
-        base32OTP
+        setBase32OTP,
+        getBase32OTP
     }
 
     public enum serverOpcode
@@ -22,12 +23,17 @@ namespace Client
         logout,
         setData,
         updateData,
+        otp,
+        withdraw,
+        deposit,
+        transfer
     }
     /// <summary>
     /// Utils class
     /// </summary>
     public static class Utils
     {
+        public const int INTERVAL = 30; // TOTP's time interval
         public const char SUCCESSED = '1'; // succeed code
         public const char FAIL = '0'; // faliture code
         public const char PAD = '*'; // pading char

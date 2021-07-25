@@ -2,8 +2,8 @@
 using System.Text;
 using Client;
 using Intel.Dal;
-using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
 
 namespace WysHost
 {
@@ -97,7 +97,7 @@ namespace WysHost
             Console.WriteLine("Opening session.");
             _jhi.CreateSession(_appletID, JHI_SESSION_FLAGS.None, initBuffer, out _session);
 
-            setTime();
+            //setTime();
             parseSecrets();
 
             _client = Client.Client.getInstance;
@@ -109,16 +109,23 @@ namespace WysHost
         private void parseSecrets()
         {
             _accountsOTP = new Dictionary<string, string>();
-            // Read the file and display it line by line.  
-            using (System.IO.StreamReader file = new System.IO.StreamReader(_fileName))
+            // Read the file and display it line by line.
+            try
             {
-                string line;
-                while ((line = file.ReadLine()) != null)
+                using (StreamReader file = new StreamReader(_fileName))
                 {
-                    string[] parts = line.Split(Utils.SEP);
-                    _accountsOTP[parts[0]] = parts[1];
-                    Console.WriteLine(line);
+                    string line;
+                    while ((line = file.ReadLine()) != null)
+                    {
+                        string[] parts = line.Split(Utils.SEP);
+                        _accountsOTP[parts[0]] = parts[1];
+                        Console.WriteLine(line);
+                    }
                 }
+            }
+            catch // file does not exists
+            {
+                using (FileStream f = File.Create(_fileName)) { }
             }
         }
 
@@ -139,12 +146,12 @@ namespace WysHost
         public void addAccountOTP(string accID, string secret)
         {
             _accountsOTP[accID] = secret;
-            using (System.IO.StreamWriter file = new System.IO.StreamWriter(_fileName, true))
+            using (StreamWriter file = new StreamWriter(_fileName, true))
                 file.WriteLine($"{accID}|{secret}");
         }
 
         /// <summary>
-        /// set time to currct time in DAL
+        /// set Dal time to current time
         /// </summary>
         private void setTime()
         {
@@ -162,9 +169,10 @@ namespace WysHost
         {
             string padString = Utils.pad(opCode.ToString() + SEP + data); // pading the data
             byte[] encMsg = SendAndRecvDAL(Encoding.ASCII.GetBytes(padString), cmdID.encrypt); // encrypt by TA
+
             // send and receive to/from server:
             _client.send(encMsg);
-            var response = _client.recv();
+            byte[] response = _client.recv();
 
             // decrypt by TA and unpad response:
             string padres = Encoding.UTF8.GetString(SendAndRecvDAL(response, cmdID.decrypt));

@@ -1,15 +1,19 @@
+import base64
+import datetime
+import hashlib
 import secrets
+import time
 
 import pyotp
 from Crypto.Cipher import AES, PKCS1_OAEP
 from Crypto.PublicKey import RSA
 
-totp = pyotp.HOTP('base32secret3232')
-
 
 class Cipher:
     END = b'}'
     PAD = b'*'
+    OTP_SIZE = 6
+    INTERVAL = 30
 
     def __init__(self):
         """
@@ -67,7 +71,16 @@ class Cipher:
         :param padded_data: the padded data
         :return: unpadded data
         """
-        return padded_data[:padded_data.rfind(self.END) + 1]
+        if padded_data.rfind(self.END) != -1:
+            return padded_data[:padded_data.rfind(self.END) + 1]
+        end = padded_data.rfind(self.PAD) + 1
+        p = padded_data[:end]
+        end -= 1
+        while p[end] == ord(self.PAD.decode()):
+            print("here")
+            end -= 1
+        print(p[:end + 1])
+        return p[:end + 1]
 
     @staticmethod
     def byte2int(num: bytes) -> int:
@@ -104,5 +117,12 @@ class Cipher:
         return pyotp.random_base32()
 
     @classmethod
-    def get_otp(cls, secret, counter):
-        return pyotp.HOTP(secret).at(counter)
+    def get_otp(cls, secret: str) -> str:
+        """
+        calc the current TOTP token
+
+        :param secret: TOTP logging user secret
+        :return: TOTP token
+        """
+        time_token = secret + str(int(time.mktime(datetime.datetime.now().timetuple()) / Cipher.INTERVAL))
+        return base64.b32encode(hashlib.sha1(time_token.encode()).digest()).decode()[:Cipher.OTP_SIZE]

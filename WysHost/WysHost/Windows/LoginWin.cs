@@ -50,9 +50,9 @@ namespace WysHost
                         MessageBox.Show("DAL error! acount not found");
                         throw new Exception("DAL error! acount not found");
                     }
-                    MainWin.connector.SendAndRecvDAL(Encoding.ASCII.GetBytes(secret), cmdID.base32OTP);
+                    MainWin.connector.SendAndRecvDAL(Encoding.ASCII.GetBytes(secret), cmdID.setBase32OTP);
                     new AccountPage(acc).ShowDialog(); // open fit screen
-                    MainWin.connector.SendAndRecvServer(serverOpcode.logout, ""); // just in case...
+                    MainWin.connector.SendAndRecvServer(serverOpcode.logout, "{}");
                 }
             }
             else

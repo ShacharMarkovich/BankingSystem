@@ -35,6 +35,7 @@
             this.transferBtn = new System.Windows.Forms.Button();
             this.logoutBtn = new System.Windows.Forms.Button();
             this.accNumLbl = new System.Windows.Forms.Label();
+            this.otpCheck = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // balanceLbl
@@ -64,6 +65,7 @@
             this.withdrawBtn.TabIndex = 2;
             this.withdrawBtn.Text = "Withdraw Money";
             this.withdrawBtn.UseVisualStyleBackColor = true;
+            this.withdrawBtn.Click += new System.EventHandler(this.withdrawBtn_Click);
             // 
             // depositBtn
             // 
@@ -73,6 +75,7 @@
             this.depositBtn.TabIndex = 3;
             this.depositBtn.Text = "Deposit Money";
             this.depositBtn.UseVisualStyleBackColor = true;
+            this.depositBtn.Click += new System.EventHandler(this.depositBtn_Click);
             // 
             // transferBtn
             // 
@@ -82,6 +85,7 @@
             this.transferBtn.TabIndex = 4;
             this.transferBtn.Text = "Transfer Money";
             this.transferBtn.UseVisualStyleBackColor = true;
+            this.transferBtn.Click += new System.EventHandler(this.transferBtn_Click);
             // 
             // logoutBtn
             // 
@@ -102,11 +106,22 @@
             this.accNumLbl.TabIndex = 6;
             this.accNumLbl.Text = "Account Number: Y";
             // 
+            // otpCheck
+            // 
+            this.otpCheck.Location = new System.Drawing.Point(211, 46);
+            this.otpCheck.Name = "otpCheck";
+            this.otpCheck.Size = new System.Drawing.Size(75, 23);
+            this.otpCheck.TabIndex = 7;
+            this.otpCheck.Text = "OTP check";
+            this.otpCheck.UseVisualStyleBackColor = true;
+            this.otpCheck.Click += new System.EventHandler(this.otpCheck_Click);
+            // 
             // AccountPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(346, 245);
+            this.Controls.Add(this.otpCheck);
             this.Controls.Add(this.accNumLbl);
             this.Controls.Add(this.logoutBtn);
             this.Controls.Add(this.transferBtn);
@@ -130,5 +145,6 @@
         private System.Windows.Forms.Button transferBtn;
         private System.Windows.Forms.Button logoutBtn;
         private System.Windows.Forms.Label accNumLbl;
+        private System.Windows.Forms.Button otpCheck;
     }
 }
