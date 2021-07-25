@@ -27,7 +27,6 @@ namespace WysHost
         {
             int unix = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds / Utils.INTERVAL;
             string otp = Encoding.UTF8.GetString(MainWin.connector.SendAndRecvDAL(Encoding.ASCII.GetBytes(unix.ToString()), cmdID.getBase32OTP));
-
             var OTPData = new { otp = otp };
             string jsonOTP = JsonConvert.SerializeObject(OTPData);
             string ans = MainWin.connector.SendAndRecvServer(serverOpcode.otp, jsonOTP);

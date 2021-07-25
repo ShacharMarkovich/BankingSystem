@@ -107,7 +107,6 @@ namespace WysHost
         /// </summary>
         private void button_submit_Click(object sender, EventArgs e)
         {
-            //int unixT = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds / Utils.INTERVAL;
             bool ret;
             if(getWysImageType() == WysWrapper.WYS_IMAGE_TYPE_CAPTCHA)
             {
@@ -121,7 +120,7 @@ namespace WysHost
                 //To be called on "submit" events. Not to be used in CAPTCHA mode.
                 ret = WysWrapper.onClickSubmit(null, 0);
             }
-            const int otpLength = 4;
+            const int otpLength = Utils.OTP_SIZE;
             byte[] otpBytes = new byte[otpLength];
             IntPtr outArr = Marshal.AllocHGlobal(otpLength);
             if (WysWrapper.getOtp(outArr, otpLength))
@@ -130,7 +129,7 @@ namespace WysHost
                 Marshal.FreeHGlobal(outArr);
 
                 string otp = BitConverter.ToString(otpBytes).Replace("-", "");
-                // TODO: send to encrtpe and then to server, is good msg come back - done, alse, close windows and try again.
+                //todo
                 MessageBox.Show(string.Format("Success! The generated OTP is: {0}", otp));
             }
             else
@@ -190,8 +189,9 @@ namespace WysHost
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             Hide();
-            WysWrapper.Close();
-            Application.Exit();
+            //WysWrapper.Close();
+            //Close();
+            //Application.Exit();
         }
 
         /// <summary>
@@ -224,6 +224,5 @@ namespace WysHost
                 textBox_captchaInput.Visible = true;
             }
         }
-
     }
 }

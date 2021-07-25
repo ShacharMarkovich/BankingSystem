@@ -28,7 +28,8 @@ class Communication:
         self.cipher = Cipher()  # gen session (=symmetric) key & iv:
         self.db = SqlDataBase()
         self.commands = {"login": self.login, "register": self.register, "logout": self.logout,
-                         "updateData": self.update_data, "otp": self.gen_otp}
+                         "updateData": self.update_data, "otp": self.gen_otp, "withdraw": self.withdraw,
+                         "deposit": self.deposit}
         self.otp_wait = False
 
     def start(self):
@@ -171,6 +172,18 @@ class Communication:
                                                                          params["Street"], params["HouseNum"], params[
                                                                              "IsMarry"]) \
             else "0|username or email already in used"
+
+    def withdraw(self, amount):
+        if self.db.account is None:
+            raise ValueError("0|Please logging first")
+        if self.db.account["Balance"] < amount["amount"]:
+            raise ValueError("0|You don't have enough money")
+        self.db.account["Balance"] -= amount["amount"]
+        self.db.update_account()
+
+    def deposit(self, amount):
+        if self.db.account is None:
+            raise ValueError("0|Please logging first")
 
     def gen_otp(self, user_otp):
         """

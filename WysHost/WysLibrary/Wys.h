@@ -21,7 +21,7 @@
 using namespace std;
 
 /**********************************************************************************************//**
- * 	Values that represent WYSRESULT value.
+ * 	Values that represent WYSRESULT value. 
  **************************************************************************************************/
 #define COLOR_WHITE 0xFFFFFFFF
 #define COLOR_BLACK 0x00000000
@@ -37,16 +37,16 @@ using namespace std;
 #define LOFF2	1
 #define LOFF3	2
 
- /**********************************************************************************************//**
-  * Using WYS_STANDARD_COMMAND_ID will forward the command to the WYS standard commands processor.
-  * Applications using standard local and remote WYS features provided by Intel are expected to use
-  * WYS_STANDARD_COMMAND_ID while using WYSSendRecv() to communicate with the applet.
-  * To communicate with a non-intel provided applet, the application and applet communication
-  * need to be configured with WYS_COMMSMODE_DIRECT enabled in the commsConfig parameter passed to WYSInit()
- **************************************************************************************************/
+/**********************************************************************************************//**
+ * Using WYS_STANDARD_COMMAND_ID will forward the command to the WYS standard commands processor. 
+ * Applications using standard local and remote WYS features provided by Intel are expected to use 
+ * WYS_STANDARD_COMMAND_ID while using WYSSendRecv() to communicate with the applet.
+ * To communicate with a non-intel provided applet, the application and applet communication 
+ * need to be configured with WYS_COMMSMODE_DIRECT enabled in the commsConfig parameter passed to WYSInit()
+**************************************************************************************************/
 #define WYS_STANDARD_COMMAND_ID  0xFFFF0001 // WYS standard command ID, the command ID will 
- // indicate that the command should be forwarded by 
- // applet to WYS standard commands processor
+											// indicate that the command should be forwarded by 
+											// applet to WYS standard commands processor
 
 /**********************************************************************************************//**
  * 	Values that represent valid user defined WYS Image Ids.
@@ -65,10 +65,10 @@ using namespace std;
 typedef JVM_COMM_BUFFER APPLETSENDRECVDATAPARAMS;
 
 typedef struct _WYSWINDOW_PROPS {
-
+	
 	IN  HWND WindowHandle;			// Cannot be NULL. jhiHandle of the window in which to display the
-									// image. This is a platform specific Window jhiHandle.
-									// e.g. HWND on windows and X11 ID on Unix based systems.
+  									// image. This is a platform specific Window jhiHandle.
+  									// e.g. HWND on windows and X11 ID on Unix based systems.
 	IN  unsigned int windowBackgroundColor; // XRGB/ARGB
 	IN  void *taInstanceId;				// Applet instance id which can be used with other
 											// jhiSessionHandles
@@ -76,7 +76,7 @@ typedef struct _WYSWINDOW_PROPS {
 
 
 /**********************************************************************************************//**
- * 	Wys Image component RGB colors.
+ * 	Wys Image component RGB colors. 
  **************************************************************************************************/
 typedef struct _WYSIMAGE_COMPONENT_COLORS {
 	INT_BYTES   wysImageColor;			// wys image background color (RGB)
@@ -88,7 +88,7 @@ typedef struct _WYSIMAGE_COMPONENT_COLORS {
 }WYSIMAGE_COMPONENT_COLORS;
 
 /**********************************************************************************************//**
- * 	Create wys image structure.
+ * 	Create wys image structure. 
  **************************************************************************************************/
 typedef struct _CREATE_WYSIMAGE {
 
@@ -96,12 +96,12 @@ typedef struct _CREATE_WYSIMAGE {
 	unsigned char   wysImageType;		// WysStandardImagePinPad or WysStandardImageOK or WysStandardImageCaptcha
 	INT_BYTES		reserved1;			// Reserved1
 	INT_BYTES		appParam;			// Identifier for the image to be used subsequently to 
-										// identify the user input for this instance of the image.
-										// Cannot be WYS_IMAGE_ID_ALL, but can be in the user wys image id range.
+ 										// identify the user input for this instance of the image.
+ 										// Cannot be WYS_IMAGE_ID_ALL, but can be in the user wys image id range.
 	XY_PAIR_BYTES	wysImageSize;		// Size of the WYS Image in pixels. Note this is not the size of the
-										// parent Window in which the WYS image is displayed.
+  										// parent Window in which the WYS image is displayed.
 										// It can be equal to the client area of the parent Window in 
-										// which case Wys Image Position <x,y> should be <0,0>
+  										// which case Wys Image Position <x,y> should be <0,0>
 	unsigned char	frameBorderWidth;   // thickness of frame border in pixels. 0 means no border.
 	XY_PAIR_BYTES	buttonSize;			// button size in pixels
 	unsigned char	buttonBorderWidth;  // thickness of button border in pixels. 0 means no border.
@@ -161,7 +161,7 @@ class Wys
 private:
 	//This is the path to the Intel DAL trusted application that was created in Eclipse.
 	string taPath;
-
+	
 	/*This is the UUID of this trusted application.
 	This is the same value as the UUID field in the Intel DAL trusted application manifest.*/
 	string taId;
@@ -188,21 +188,21 @@ private:
 
 	UINT32 pavpSessionHandle;
 
-	WYSWINDOW_PROPS wysWindowProps;
+	WYSWINDOW_PROPS wysWindowProps; 
 
 public:
 	static Wys* Session();
-
+	
 	WYSRESULT doWysSequence(HWND windowHandle, unsigned char wysImageType);
 
 	WYSRESULT onMouseDown(HWND windowHandle, UINT16 x, UINT16 y);
 	WYSRESULT onMouseUp(UINT16 x, UINT16 y);
-
+	
 	UINT32 onClickSubmit(wchar_t* userInput, UINT16 inputLength);
 	WYSRESULT onClickClear();
 
 	bool getOtp(void* outArr, int arrLength);
-
+	
 	bool close();
 	bool closePavpSession();
 
@@ -211,23 +211,23 @@ private:
 	~Wys(void);
 
 	WYSRESULT doWysDisplay(UINT32* pavpSessionHandle, unsigned char wysImageType);
-	WYSRESULT createStdImage(UINT32 pavpSessionHandle, IN XY_PAIR_BYTES *pwysImagePosition, IN CREATE_WYSIMAGE *pWysImageCreateParams, IN UINT32 wysImageCreateParamsLen, IN void *rsvdparam1, IN UINT32 rsvparam2);
-	WYSRESULT displayImage(XY_PAIR_BYTES *pWysImagePosition, CREATE_WYSIMAGE *pWysImage);
-	WYSRESULT sendWYSStdWindowRequest(CREATE_WYSIMAGE *pWysWindowParams, CREATE_WINDOW_RESPONSE_MSG *pRespData, UINT32 *pRespDataLength);
+	WYSRESULT createStdImage(UINT32 pavpSessionHandle, IN XY_PAIR_BYTES *pwysImagePosition, IN CREATE_WYSIMAGE *pWysImageCreateParams, IN UINT32 wysImageCreateParamsLen, IN void *rsvdparam1,	IN UINT32 rsvparam2);
+	WYSRESULT displayImage(XY_PAIR_BYTES *pWysImagePosition, CREATE_WYSIMAGE *pWysImage );
+	WYSRESULT sendWYSStdWindowRequest( CREATE_WYSIMAGE *pWysWindowParams, CREATE_WINDOW_RESPONSE_MSG *pRespData, UINT32 *pRespDataLength );
 	WYSRESULT repaintImage(UINT32* pavpSessionHandle, UINT32 wysImageId);
 
-	void deleteWysImageObject(WysImage *pWysImageObj, unsigned int wysImageId);
-	WysImage* getWysImageObject(unsigned int wysImageId);
+	void deleteWysImageObject( WysImage *pWysImageObj, unsigned int wysImageId );
+	WysImage* getWysImageObject( unsigned int wysImageId );
 	WYSRESULT releaseImageX(UINT32 wysImageId = WYS_IMAGE_ID_ALL, BOOL bCancel = FALSE);
-	WYSRESULT getLocalWysImageFromFWAndDisplay(CREATE_WINDOW_RESPONSE_MSG *windowResp, RECT *wysImageRect, void **pDecoderRenderTargets);
+	WYSRESULT getLocalWysImageFromFWAndDisplay( CREATE_WINDOW_RESPONSE_MSG *windowResp, RECT *wysImageRect, void **pDecoderRenderTargets );
 	WYSRESULT getImageFromFW(UINT32 mejhiHandle, UINT32 ImageSize, UINT8 *pImageBuff);
 	WYSRESULT jhiSendRecv(UINT32 reqBufLen, void *pSendReq, UINT32 recvBufLen, void *pRecvBuf, UINT32 *pRespDataLen = NULL, UINT8 *pRespData = NULL);
 	bool drawClickEffect(HWND windowHandle, int btnL, int btnT, int btnW, int btnH, DWORD color);
-
-	WYSRESULT submitClickInput(INT32 wysImageType, XYPAIR_VECTOR *Clicks);
-	WYSRESULT submitCaptchaString(UINT32 captchaStringLen, const wchar_t *sCaptchaString);
+	
+	WYSRESULT submitClickInput(INT32 wysImageType, XYPAIR_VECTOR *Clicks );
+	WYSRESULT submitCaptchaString( UINT32 captchaStringLen, const wchar_t *sCaptchaString );
 	WYSRESULT ReleaseImageX(UINT32 wysImageId = WYS_IMAGE_ID_ALL, BOOL bCancel = FALSE);
 	WYSRESULT wysCancel(unsigned int appParam);
 	void DeleteWysImageObject(WysImage *pWysImageObj, unsigned int wysImageId);
-	inline bool eraseClickEffect(WysImage *pWysImageObj) { return FAILED(handler.DisplayVideo(pWysImageObj->m_pDecoderRenderTargets, &pWysImageObj->m_wysImgRenderRect, true)); }
+	inline bool eraseClickEffect(WysImage *pWysImageObj) { return FAILED(handler.DisplayVideo(pWysImageObj->m_pDecoderRenderTargets, &pWysImageObj->m_wysImgRenderRect, true )); }
 };

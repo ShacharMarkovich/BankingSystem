@@ -56,7 +56,9 @@ public class WYS extends IntelApplet
 	
 	static final int RESPONSE_TEST_CONNECTION = 0;
 	static final int RESPONSE_OK = 1;
-
+	
+	static final int OTP_SIZE = 4;
+	
 	static final String SEP = "|";
 	
 	private StandardWindow m_standardWindow;
@@ -192,7 +194,7 @@ public class WYS extends IntelApplet
 		HashAlg myHMAC = HashAlg.create(HashAlg.HASH_TYPE_SHA1); //create instance of Hash algorithm
 		byte[] totp = new byte[40];
 		myHMAC.processComplete(token, (short)0, (short)token.length, totp, (short)0); //hash the text
-		return Base32.encode(totp).substring(0, 6);
+		return Base32.encode(totp).substring(0, OTP_SIZE);
 	}
 	
 
@@ -371,10 +373,12 @@ public class WYS extends IntelApplet
 			DebugPrint.printString("OTP is blocked.");
 			return IntelApplet.APPLET_ERROR_BAD_STATE;
 		}
-		byte[] otp = getOTPSecret(_unixTime).getBytes();
-		//byte[] otp = new byte[TypeConverter.INT_BYTE_SIZE];
+		byte[] otp = new byte[TypeConverter.INT_BYTE_SIZE];
+		DebugPrint.printString("_unixTime: " + _unixTime);
+		otp = getOTPSecret(_unixTime).getBytes();
+		DebugPrint.printString(new String(otp));
 		//Random.getRandomBytes(otp, (short)0, (short)otp.length);
-		
+		//TypeConverter.INT_BYTE_SIZE
 		setResponse(otp, 0, otp.length);
 		
 		return IntelApplet.APPLET_SUCCESS;

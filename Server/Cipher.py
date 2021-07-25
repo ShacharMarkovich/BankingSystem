@@ -12,7 +12,7 @@ from Crypto.PublicKey import RSA
 class Cipher:
     END = b'}'
     PAD = b'*'
-    OTP_SIZE = 6
+    OTP_SIZE = 4
     INTERVAL = 60
 
     def __init__(self):

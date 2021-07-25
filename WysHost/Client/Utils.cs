@@ -49,7 +49,7 @@ namespace Client
         public const char PAD = '*'; // pading char
         public const char SEP = '|';
         public const int BLOCK_SIZE = 16; // AES block size
-
+        public const int OTP_SIZE = 4;
 
         /// <summary>
         /// hashing given string according to SHA256 algoritm

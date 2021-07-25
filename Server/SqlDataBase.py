@@ -124,6 +124,13 @@ class SqlDataBase(object):
     def is_login(self):
         return self.account is not None
 
+    def update_account(self):
+        self.cur.execute(f"""UPDATE Account SET full_name='{full_name}', username='{username}', email='{email}',
+                                birthday='{birthday[:10]}', gender='{gender}', country='{country}', city='{city}',
+                                street='{street}', house_num={house_num}, is_marry={is_marry}
+                                WHERE accID = {accNum}""")
+        self.con.commit()
+
     def update_account(self, accNum: int, full_name: str, username: str, email: str, birthday, gender: str,
                        country: str, city: str, street: str, house_num: int, is_marry: bool) -> bool:
         """
