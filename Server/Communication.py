@@ -57,12 +57,13 @@ class Communication:
         logging.info("start communicate!")
         while code != self.EXIT:
             enc_data = self.conn_socket.recv(self.MAX_MSG)
+            print("[!] hey", enc_data)
             data = self.decrypt(enc_data)
             try:
                 code, params = self.parse(data)
                 logging.info(f"got from client:\n(code, params) = {code, params}")
             except:
-                logging.info("[!] error")
+                logging.info("[!] error: " + data)
                 self.conn_socket.send(self.encrypt("0|message not in format"))
             else:
                 ans = self.commands[code](params)
@@ -98,7 +99,9 @@ class Communication:
         :param enc_data: the given msg
         :return: decrypt msg
         """
-        return self.cipher.decrypt(enc_data).decode()
+        p = self.cipher.decrypt(enc_data)
+        print("Cipher decrypt: ", p)
+        return p.decode()
 
     def parse(self, data: str) -> Tuple[str, dict]:
         """

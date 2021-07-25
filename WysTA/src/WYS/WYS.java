@@ -50,21 +50,25 @@ public class WYS extends IntelApplet
 	static final int COMMAND_ENCRYPT= 8;
 	static final int COMMAND_DECRYPT= 9;
 	
-	static final int COMMAND_GEN_OTP = 10;
+	static final int COMMAND_SET_OTP_SECRET = 10;
 	
 	static final int RESPONSE_TEST_CONNECTION = 0;
 	static final int RESPONSE_OK = 1;
 
+	static final String SEP = "|";
 	
 	private StandardWindow m_standardWindow;
 	private RsaAlg rsa = null;
 	private SymmetricBlockCipherAlg aes_cbc = null;
+	private SymmetricBlockCipherAlg otp_aes_ecb =null;
+	private byte[] otpKey = new byte[16];
 	private byte[] modulus;
 	private byte[] exponent;
 	private final byte[] PIN = {1, 7, 1, 7};
 	final byte[] defualtResponse = { 'O', 'K' };
 	
 	private static String loginUserID= "None";
+	private static byte[] loginUserOTPsecret= new byte[32];
 	
 	
 	
@@ -83,18 +87,36 @@ public class WYS extends IntelApplet
 	public int onInit(byte[] request) {
 
 		DebugPrint.printString("WYS applet entered");
+		// init RSA keys for communication start
 		if (rsa == null) {
 			rsa = RsaAlg.create();
 			rsa.generateKeys((short)(128));
-			
-			modulus = new byte[rsa.getModulusSize()];
+			modulus = new byte[rsa.getModulusSize()]; // size is 128
 			exponent = new byte[rsa.getPublicExponentSize()];
 			rsa.getKey(modulus,(short) 0, exponent,(short)0);
 			rsa.setPaddingScheme(RsaAlg.PAD_TYPE_OAEP);
 		}
 		
+		// create AES CBC algorithm object for conversation encryption
 		if(aes_cbc == null) {
 			aes_cbc = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_CBC);
+		}
+		
+		// init AES key & IV for encrypt the OTP secret
+		otp_aes_ecb = SymmetricBlockCipherAlg.create(SymmetricBlockCipherAlg.ALG_TYPE_AES_ECB);
+
+		if (FlashStorage.getFlashDataSize(0) == 0) {
+			Random.getRandomBytes(otpKey, (short)0, (short)16);
+			DebugPrint.printString("new OTP enc key:");
+			DebugPrint.printBuffer(otpKey);
+			otp_aes_ecb.setKey(otpKey, (short)0, (short)otpKey.length);
+			FlashStorage.writeFlashData(0, otpKey, 0, otpKey.length);
+		}
+		else {
+			FlashStorage.readFlashData(0, otpKey, 0);
+			DebugPrint.printString("OTP enc key:");
+			DebugPrint.printBuffer(otpKey);
+			otp_aes_ecb.setKey(otpKey, (short)0, (short)otpKey.length);
 		}
 		
 		m_standardWindow = StandardWindow.getInstance();
@@ -122,74 +144,24 @@ public class WYS extends IntelApplet
 	}
 	
 	/**
-	 * get to bytes arrays and check if equals
-	 * @param a first array
-	 * @param b second array
-	 * @return if same
-	 */
-	private boolean byteArrayEquals(byte[] a, byte[] b)	{
-		int i = 0;
-		while (i < a.length && i < b.length) {
-			if (a[i] != b[i])
-				return false;
-			i += 1;
-		}
-		return true;
-	}
-	
-	/**
 	 * after successful login, save the given new OTP secret key and user id in flash store
 	 * @param data OTP secret key and user id
 	 */
-	private void saveOTPSecret(String data) {
+	private byte[] register(String data) {
 		data = data.substring(5); // remove "1|id:"
 		int sepInd = data.indexOf("|");
-		byte[] id = data.substring(0,sepInd).getBytes(); // get new user id
 		
+		String id = data.substring(0,sepInd); // get new user id
 		byte[] otpSecret = data.substring(sepInd + 1,sepInd + 1+32).getBytes(); // get OTP secret key, length is always 32
-		DebugPrint.printString("id is: " + new String(id));
+		
+		DebugPrint.printString("id is: " + id);
 		DebugPrint.printString("otpSecret is: " + new String(otpSecret));
-
 		
-		
-		///////////
-		byte[] encMsg = new byte[4096];
-		DebugPrint.printBuffer(encMsg);
-		DebugPrint.printString("a");
-		aes_cbc.encryptComplete(otpSecret, (short)0, (short)otpSecret.length, encMsg,(short) 0);
-		DebugPrint.printBuffer(encMsg);
-		DebugPrint.printString("b");
-
-		DebugPrint.printInt(encMsg.length);
-		DebugPrint.printString("c");
-
-		DebugPrint.printInt((short)otpSecret.length);
-		DebugPrint.printString("d");
-
-		DebugPrint.printInt(otpSecret.length);
-		DebugPrint.printString("e");
-
-		DebugPrint.printInt(new String(encMsg).indexOf("\0"));
-		DebugPrint.printString("f");
-		///////////
-		
-		
-		// TODO: fix it!
-		// save id, OTP key and counter in FlashStorage:
-		FlashStorage.writeFlashData(0, id, 0, id.length);	
-		//currFlashStorageIndex++;
-		DebugPrint.printString("1");
-
-		FlashStorage.writeFlashData(1, otpSecret, 0, otpSecret.length);	
-		//currFlashStorageIndex++;
-		DebugPrint.printString("2");
-		
-		byte[] counter = intToByteArray(0);
-		DebugPrint.printString(new String(counter));
-		// FlashStorage.writeFlashData(currFlashStorageIndex, counter, 0, counter.length);	
-		// currFlashStorageIndex++;
-		DebugPrint.printString("3");
-		DebugPrint.printString("finish saveOTPSecret");
+		byte[] encOtp = new byte[otpSecret.length];
+		otp_aes_ecb.encryptComplete(otpSecret, (short)0, (short)otpSecret.length, encOtp, (short)0);
+		DebugPrint.printString("1|" + id + SEP +Base32.encode(encOtp));
+		DebugPrint.printString("register finish");
+		return ("1|" + id + SEP +Base32.encode(encOtp)).getBytes();		
 	}
 	
 	/**
@@ -310,6 +282,9 @@ public class WYS extends IntelApplet
 				Calendar time = Calendar.getInstance(Calendar.CLOCK_SOURCE_PRTC, new TimeZone());
 				byte[] set_time_info = new byte[256];
 				time.setTime(unix, set_time_info, 0);
+				DebugPrint.printString("set time");
+				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
+				res = RESPONSE_TEST_CONNECTION;
 				break;
 				
 				
@@ -325,9 +300,8 @@ public class WYS extends IntelApplet
 				break;
 			
 			case COMMAND_GET_ENCRYPTED_SESSION_KEY:
-				byte[] data = new byte[modulus.length];
-				rsa.decryptComplete(request, (short)0, (short)modulus.length, data,(short) 0);
-								
+				byte[] data = new byte[32];
+				rsa.decryptComplete(request, (short)0, (short)data.length, data,(short) 0);
 				aes_cbc.setKey(data, (short)0, (short)16);
 				aes_cbc.setIV(data, (short)16, (short)16);
 				
@@ -349,11 +323,10 @@ public class WYS extends IntelApplet
 				byte[] decMsg = new byte[request.length];
 				aes_cbc.decryptComplete(request, (short)0, (short)request.length, decMsg, (short)0);
 				String response = new String(decMsg);
-
+				
 				if (response.startsWith("1|id:")) // registration succeeded msg with accID and secret for OTP
 				{
-					saveOTPSecret(response);
-					decMsg = "1|user created".getBytes();
+					decMsg = register(response);
 					setResponse(decMsg, 0, decMsg.length);
 				}
 				else if (response.startsWith("1|user login:"))
@@ -366,8 +339,16 @@ public class WYS extends IntelApplet
 				
 				res = RESPONSE_OK;
 				break;
+			case COMMAND_SET_OTP_SECRET:
+				DebugPrint.printString("base32: " + new String(request));
+				byte[] enc_secret = Base32.decode(new String(request));
+				otp_aes_ecb.decryptComplete(enc_secret, (short)0, (short)enc_secret.length, loginUserOTPsecret, (short)0);
+				setResponse(defualtResponse, 0, defualtResponse.length); // return OK
+				res = RESPONSE_OK;
+				DebugPrint.printString("user secret secret: " + new String(loginUserOTPsecret));
+				break;
 				
-			case COMMAND_GEN_OTP:
+			case -17://COMMAND_GEN_OTP:
 				byte[] signature = getOTPSecret();
 				setResponse(signature, 0, signature.length);
 				res = RESPONSE_OK;

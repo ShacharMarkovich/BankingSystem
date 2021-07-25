@@ -73,6 +73,7 @@ class SqlDataBase(object):
         :return: account id if succeeded
         """
         if self.exists(username, email):
+            print("[!]username or email already in used")
             raise ValueError("0|username or email already in used")
 
         salt = secrets.token_hex(4)
@@ -90,6 +91,7 @@ class SqlDataBase(object):
             self.cur.execute(f"INSERT INTO Secret(accId, secret, counter) VALUES({accId[0]}, '{secret}', 0)")
             self.con.commit()
             return accId[0]
+        raise ValueError("0|error - please try again")
 
     def login(self, username: str, password: str) -> dict:
         """

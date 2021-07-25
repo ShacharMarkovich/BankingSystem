@@ -3,6 +3,7 @@ using System.Text;
 using Client;
 using Intel.Dal;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace WysHost
 {
@@ -24,6 +25,7 @@ namespace WysHost
         #region TA variables
         private string _appletID = "4c507bdd-2853-417b-98ee-630275d44822";
         private string _appletPath = @"C:\DALProjects\BankingSystem\WysTA\bin\WysTA.dalp";
+
 
         private Jhi _jhi;
         private JhiSession _session;
@@ -58,9 +60,18 @@ namespace WysHost
             }
             private set { _exponent = value; }
         }
+
+        public string GetAccount(string accID) => _accountsOTP[accID];
+
         private byte[] _exponent = null;
         #endregion
 
+        /// <summary>
+        /// Dictionary of accounts ID and muches Base32 encoded encrypted OTP secret.
+        /// _accountsOTP = {'ID1': Base32(E_aes(secret1)),...}
+        /// </summary>
+        private Dictionary<string, string> _accountsOTP;
+        private static string _fileName = @"C:\bin\data";
         private Client.Client _client;
         private string SEP = "|";
 
@@ -85,8 +96,30 @@ namespace WysHost
             byte[] initBuffer = new byte[] { };
             Console.WriteLine("Opening session.");
             _jhi.CreateSession(_appletID, JHI_SESSION_FLAGS.None, initBuffer, out _session);
+
             setTime();
+            parseSecrets();
+
             _client = Client.Client.getInstance;
+        }
+
+        /// <summary>
+        /// parse OTP encrypted Secrets from file
+        /// </summary>
+        private void parseSecrets()
+        {
+            _accountsOTP = new Dictionary<string, string>();
+            // Read the file and display it line by line.  
+            using (System.IO.StreamReader file = new System.IO.StreamReader(_fileName))
+            {
+                string line;
+                while ((line = file.ReadLine()) != null)
+                {
+                    string[] parts = line.Split(Utils.SEP);
+                    _accountsOTP[parts[0]] = parts[1];
+                    Console.WriteLine(line);
+                }
+            }
         }
 
         /// <summary>
@@ -99,13 +132,24 @@ namespace WysHost
         }
 
         /// <summary>
+        /// add new account OTP data
+        /// </summary>
+        /// <param name="accID">account ID</param>
+        /// <param name="secret">OTP Base32 + encrypted secret</param>
+        public void addAccountOTP(string accID, string secret)
+        {
+            _accountsOTP[accID] = secret;
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(_fileName, true))
+                file.WriteLine($"{accID}|{secret}");
+        }
+
+        /// <summary>
         /// set time to currct time in DAL
         /// </summary>
         private void setTime()
         {
             int unix = (int)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            byte[] ans = SendAndRecvDAL(Encoding.ASCII.GetBytes(unix.ToString()), cmdID.setTime);
-            MessageBox.Show(Encoding.UTF8.GetString(ans));
+            SendAndRecvDAL(Encoding.ASCII.GetBytes(unix.ToString()), cmdID.setTime);
         }
 
         /// <summary>
@@ -133,7 +177,7 @@ namespace WysHost
         /// <param name="sendBuff">buffer to send</param>
         /// <param name="cmdId">command number</param>
         /// <returns>TA respone</returns>
-        private byte[] SendAndRecvDAL(byte[] sendBuff, cmdID cmdId)
+        public byte[] SendAndRecvDAL(byte[] sendBuff, cmdID cmdId)
         {
             byte[] recvBuff = new byte[4096];
             int responseCode;
@@ -141,6 +185,9 @@ namespace WysHost
             return recvBuff;
         }
 
+        /// <summary>
+        /// d'tor. End communication - close socket
+        /// </summary>
         ~Connector()
         {
             try

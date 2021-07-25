@@ -1,12 +1,6 @@
 ﻿using Client;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 
 namespace WysHost
@@ -87,7 +81,6 @@ namespace WysHost
             if (CheckNewAccountData(_currAccount))
             {
                 string jsonString = JsonConvert.SerializeObject(_currAccount);
-                MessageBox.Show(jsonString);
                 string respone = MainWin.connector.SendAndRecvServer(serverOpcode.updateData, jsonString);
                 MessageBox.Show(respone.Substring(2));
                 if (respone[0] == Utils.SUCCESSED)

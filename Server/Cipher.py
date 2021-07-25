@@ -1,4 +1,3 @@
-# import binascii
 import secrets
 
 import pyotp
@@ -18,12 +17,15 @@ class Cipher:
         """
         self.shared_key = secrets.token_hex(8).encode()
         self.iv = secrets.token_hex(8).encode()
+
+        self.encrypt_obj = self.create_cipher_obj()
+        self.decrypt_obj = self.create_cipher_obj()
+
         self.rsa_pubkey = None
 
-    def cipher_obj(self):
+    def create_cipher_obj(self):
         """
-        Creating an AES cipher block for encrypting & decrypting.
-        The cipher object is working only once - so we recreating it every encrypting/decrypting.
+        Creating an AES cipher block for encrypting or decrypting.
 
         :returns: AES cipher block for encrypting/decrypting.
         """
@@ -36,7 +38,7 @@ class Cipher:
         :param enc_msg: the encrypted data
         :return: decrypt msg
         """
-        return self.unpad(self.cipher_obj().decrypt(enc_msg))
+        return self.unpad(self.create_cipher_obj().decrypt(enc_msg))
 
     def encrypt(self, msg: bytes) -> bytes:
         """
@@ -45,7 +47,7 @@ class Cipher:
         :param msg: the msg
         :return: encrypted msg
         """
-        return self.cipher_obj().encrypt(self.pad(msg, AES.block_size))
+        return self.create_cipher_obj().encrypt(self.pad(msg, AES.block_size))
 
     def pad(self, data: bytes, size: int) -> bytes:
         """
@@ -93,17 +95,6 @@ class Cipher:
         :return: enc msg
         """
         return PKCS1_OAEP.new(self.rsa_pubkey).encrypt(self.shared_key + self.iv)
-
-    def enc_int_msg(self, msg: int) -> bytes:
-        """
-        Get a new conversation public key, encrypted by the PRE_SHARED_KEY
-
-        :param msg: the msg
-        :return: encrypted new public key
-        """
-        aes_encrypting = self.cipher_obj()
-        encrypted_pubkey = aes_encrypting.encrypt(self.pad(msg.to_bytes(256, "big"), AES.block_size))
-        return encrypted_pubkey
 
     @staticmethod
     def get_secret() -> str:

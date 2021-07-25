@@ -11,7 +11,8 @@ namespace Client
         getExponent,
         sendEncryptedSession,
         encrypt,
-        decrypt
+        decrypt,
+        base32OTP
     }
 
     public enum serverOpcode
@@ -30,7 +31,9 @@ namespace Client
         public const char SUCCESSED = '1'; // succeed code
         public const char FAIL = '0'; // faliture code
         public const char PAD = '*'; // pading char
+        public const char SEP = '|';
         public const int BLOCK_SIZE = 16; // AES block size
+
 
         /// <summary>
         /// hashing given string according to SHA256 algoritm
@@ -68,7 +71,7 @@ namespace Client
         /// <returns>unpad data</returns>
         public static string unpad(string data)
         {
-            for (int i = data.LastIndexOf(PAD); i != 0; i--)
+            for (int i = data.LastIndexOf(PAD); i > 0; i--)
                 if (data[i] != PAD)
                     return data.Substring(0, i + 1);
             return data;

@@ -18,7 +18,7 @@ namespace WysHost
 
         private void logoutBtn_Click(object sender, EventArgs e)
         {
-            MainWin.connector.SendAndRecvServer(Client.serverOpcode.logout, null);
+            MainWin.connector.SendAndRecvServer(Client.serverOpcode.logout, "");
             Close();
         }
     }

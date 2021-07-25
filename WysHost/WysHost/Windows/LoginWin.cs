@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using Client;
 using Newtonsoft.Json.Converters;
 using System.Drawing;
+using System.Text;
 
 namespace WysHost
 {
@@ -31,17 +32,28 @@ namespace WysHost
                 // Serialize data into json string and send to server and TA
                 var loginData = new { username = usernameTextBox.Text, hash_password = Utils.sha256_hash(passwordTextBox.Text) };
                 string jsonString = JsonConvert.SerializeObject(loginData);
-                string respone = MainWin.connector.SendAndRecvServer(serverOpcode.login, jsonString);
-                MessageBox.Show(respone);
-                if (respone[0] == Utils.SUCCESSED)
+                string res = MainWin.connector.SendAndRecvServer(serverOpcode.login, jsonString); // account data
+                if (res[0] == Utils.FAIL)
+                    MessageBox.Show(res.Substring(2));
+                else
                 {
                     // Deserialize accuont info
                     var dateTimeConverter = new IsoDateTimeConverter { DateTimeFormat = "yyyy-MM-dd" };
-                    Account acc = JsonConvert.DeserializeObject<Account>(respone.Substring(13), dateTimeConverter);
+                    Account acc = JsonConvert.DeserializeObject<Account>(res.Substring(13), dateTimeConverter);
+                    string secret;
+                    try
+                    {
+                        secret = MainWin.connector.GetAccount(acc.accNum.ToString());
+                    }
+                    catch
+                    {
+                        MessageBox.Show("DAL error! acount not found");
+                        throw new Exception("DAL error! acount not found");
+                    }
+                    MainWin.connector.SendAndRecvDAL(Encoding.ASCII.GetBytes(secret), cmdID.base32OTP);
                     new AccountPage(acc).ShowDialog(); // open fit screen
+                    MainWin.connector.SendAndRecvServer(serverOpcode.logout, ""); // just in case...
                 }
-                else
-                    MessageBox.Show(respone.Substring(2)); // show error msg
             }
             else
                 MessageBox.Show("Please fill both username & password!"); // show error msg

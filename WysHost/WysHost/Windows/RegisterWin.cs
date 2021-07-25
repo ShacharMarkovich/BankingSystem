@@ -96,11 +96,13 @@ namespace WysHost
                 // Serialize details and send to server and TA
                 newAcc.Password = Utils.sha256_hash(newAcc.Password);
                 string jsonString = JsonConvert.SerializeObject(newAcc);
-                string response = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString);
+                string response = MainWin.connector.SendAndRecvServer(serverOpcode.register, jsonString); // 1|accID|E(otp secret)
 
                 if (response[0] == Utils.SUCCESSED)
                 {
-                    MessageBox.Show(response.Substring(5)); // show response msg
+                    string[] parts = response.Split(Utils.SEP);
+                    MainWin.connector.addAccountOTP(parts[1], parts[2]);
+                    MessageBox.Show("User created successfully");
                     Close(); // if creation work - close window and move back to main window
                 }
                 else // error - clean details
