@@ -56,19 +56,22 @@ class Communication:
         """
         code = 1
         logging.info("start communicate!")
-        while code != self.EXIT:
-            enc_data = self.conn_socket.recv(self.MAX_MSG)
-            try:
-                data = self.decrypt(enc_data)
-                code, params = self.parse(data)
-            except Exception as e:
-                logging.info("[!] error: ", str(e))
-                self.conn_socket.send(self.encrypt("0|message not in format"))
-            else:
-                logging.info(f"got from client:\n(code, params) = {code, params}")
-                ans = self.commands[code](params)
-                logging.info(ans)
-                self.conn_socket.send(self.encrypt(ans))
+        try:
+            while code != self.EXIT:
+                enc_data = self.conn_socket.recv(self.MAX_MSG)
+                try:
+                    data = self.decrypt(enc_data)
+                    code, params = self.parse(data)
+                except Exception as e:
+                    logging.info("[!] error: ", str(e))
+                    self.conn_socket.send(self.encrypt("0|message not in format"))
+                else:
+                    logging.info(f"got from client:\n(code, params) = {code, params}")
+                    ans = self.commands[code](params)
+                    logging.info(ans)
+                    self.conn_socket.send(self.encrypt(ans))
+        except:
+            pass
 
     def keys_exchange(self) -> None:
         """

@@ -19,35 +19,34 @@ namespace WysHost
 {
     class WysWrapper
     {
-       public static UInt32 SAMPLE_CODE_SUCCESS	                = 0;
+        public static UInt32 SAMPLE_CODE_SUCCESS = 0;
+        public static Byte WYS_IMAGE_TYPE_PINPAD = 1;
+        public static Byte WYS_IMAGE_TYPE_OKBUTTON = 2;
+        public static Byte WYS_IMAGE_TYPE_CAPTCHA = 3;
 
-       public static Byte WYS_IMAGE_TYPE_PINPAD = 1;
-       public static Byte WYS_IMAGE_TYPE_OKBUTTON = 2;
-       public static Byte WYS_IMAGE_TYPE_CAPTCHA = 3;
 
+        [DllImport("WysLibrary", EntryPoint = "doWysSequence", CallingConvention = CallingConvention.Cdecl)]
+        public static extern UInt32 doWysSequence(IntPtr hwnd, Byte wysImageType);
 
-       [DllImport("WysLibrary", EntryPoint = "doWysSequence", CallingConvention = CallingConvention.Cdecl)]
-       public static extern UInt32 doWysSequence(IntPtr hwnd, Byte wysImageType);
+        [DllImport("WysLibrary", EntryPoint = "onMouseDown", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool onMouseDown(IntPtr hwnd, UInt16 x, UInt16 y);
 
-       [DllImport("WysLibrary", EntryPoint = "onMouseDown", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool onMouseDown(IntPtr hwnd, UInt16 x, UInt16 y);
+        [DllImport("WysLibrary", EntryPoint = "onMouseUp", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool onMouseUp(UInt16 x, UInt16 y);
 
-       [DllImport("WysLibrary", EntryPoint = "onMouseUp", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool onMouseUp(UInt16 x, UInt16 y);
+        [DllImport("WysLibrary", EntryPoint = "onClickSubmit", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool onClickSubmit([MarshalAs(UnmanagedType.LPWStr)]string userInput, UInt16 inputLength);
 
-       [DllImport("WysLibrary", EntryPoint = "onClickSubmit", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool onClickSubmit([MarshalAs(UnmanagedType.LPWStr)]string userInput, UInt16 inputLength);
+        [DllImport("WysLibrary", EntryPoint = "onClickClear", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool onClickClear();
 
-       [DllImport("WysLibrary", EntryPoint = "onClickClear", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool onClickClear();
+        [DllImport("WysLibrary", EntryPoint = "getOtp", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool getOtp(IntPtr outArr, int arrLength);
 
-       [DllImport("WysLibrary", EntryPoint = "getOtp", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool getOtp(IntPtr outArr, int arrLength);
+        [DllImport("WysLibrary", EntryPoint = "close", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool Close();
 
-       [DllImport("WysLibrary", EntryPoint = "close", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool Close();
-
-       [DllImport("WysLibrary", EntryPoint = "closePavpSession", CallingConvention = CallingConvention.Cdecl)]
-       public static extern bool closePavpSession();
+        [DllImport("WysLibrary", EntryPoint = "closePavpSession", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool closePavpSession();
     }
 }

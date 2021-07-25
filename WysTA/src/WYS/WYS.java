@@ -255,6 +255,7 @@ public class WYS extends IntelApplet
 				DebugPrint.printString("Getting OTP...");
 				res = getOtp(); 
 				break;
+				
 			case COMMAND_TEST_CONNECTION:
 				
 				if(request != null)
@@ -363,12 +364,13 @@ public class WYS extends IntelApplet
 	
 	private int getOtp()
 	{
+		DebugPrint.printString("getOtp()");
 		if ( !isOtpAllowed() )
 		{
 			DebugPrint.printString("OTP is blocked.");
 			return IntelApplet.APPLET_ERROR_BAD_STATE;
 		}
-		
+		//getOTPSecret(unixTime)
 		byte[] otp = new byte[TypeConverter.INT_BYTE_SIZE];
 		Random.getRandomBytes(otp, (short)0, (short)otp.length);
 		

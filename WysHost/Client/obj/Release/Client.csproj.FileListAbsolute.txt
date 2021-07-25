@@ -8,8 +8,3 @@ C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\bin\Rel
 C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Release\Client.csprojResolveAssemblyReference.cache
 C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Release\Client.dll
 C:\Users\Naor\source\repos\ShacharMarkovich\BankingSystem\WysHost\Client\obj\Release\Client.pdb
-C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.dll
-C:\DALProjects\BankingSystem\WysHost\Client\bin\Release\Client.pdb
-C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.csprojResolveAssemblyReference.cache
-C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.dll
-C:\DALProjects\BankingSystem\WysHost\Client\obj\Release\Client.pdb
