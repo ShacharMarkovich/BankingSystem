@@ -124,12 +124,18 @@ class SqlDataBase(object):
     def is_login(self):
         return self.account is not None
 
-    def update_account(self):
-        self.cur.execute(f"""UPDATE Account SET full_name='{full_name}', username='{username}', email='{email}',
-                                birthday='{birthday[:10]}', gender='{gender}', country='{country}', city='{city}',
-                                street='{street}', house_num={house_num}, is_marry={is_marry}
-                                WHERE accID = {accNum}""")
+    def update_account_balance(self, acc_id: int, new_bal: float):
+        """
+        get a user and his new balance and update it
+
+        :param acc_id: the account id
+        :param new_bal: his new balance
+        """
+        self.cur.execute(
+            f"""UPDATE Account SET balance='{new_bal: float}' WHERE accID = {acc_id}""")
         self.con.commit()
+        if self.account["accNum"] == acc_id:
+            self.account["Balance"] = new_bal
 
     def update_account(self, accNum: int, full_name: str, username: str, email: str, birthday, gender: str,
                        country: str, city: str, street: str, house_num: int, is_marry: bool) -> bool:
@@ -159,3 +165,14 @@ class SqlDataBase(object):
             if secret is not None:
                 return secret
         raise ValueError("0|Unknown error, try again")
+
+    def check_if_exists(self, acc_id):
+        """
+        check if given account ID exists in Account DB
+        :param acc_id: the account ID
+        :return: if exists
+        """
+        for _id in self.cur.execute(f"SELECT accId FROM Account WHERE accId = {acc_id} LIMIT 1"):
+            if _id is not None and _id == acc_id:
+                return True
+        return False

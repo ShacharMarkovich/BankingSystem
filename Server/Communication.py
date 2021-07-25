@@ -28,7 +28,7 @@ class Communication:
         self.cipher = Cipher()  # gen session (=symmetric) key & iv:
         self.db = SqlDataBase()
         self.commands = {"login": self.login, "register": self.register, "logout": self.logout,
-                         "updateData": self.update_data, "otp": self.gen_otp, "withdraw": self.withdraw,
+                         "updateData": self.update_data, "otp": self.otp, "withdraw": self.withdraw,
                          "deposit": self.deposit}
         self.otp_wait = False
 
@@ -173,23 +173,55 @@ class Communication:
                                                                              "IsMarry"]) \
             else "0|username or email already in used"
 
-    def withdraw(self, amount):
+    def withdraw(self, amount: dict) -> str:
+        """
+        withdraw amount from current login user
+
+        :param amount: the amount
+        :return: fit msg
+        """
         if self.db.account is None:
             raise ValueError("0|Please logging first")
         if self.db.account["Balance"] < amount["amount"]:
             raise ValueError("0|You don't have enough money")
-        self.db.account["Balance"] -= amount["amount"]
-        self.db.update_account()
+        print("withdraw")
 
-    def deposit(self, amount):
+        # TODO: TOTP
+        self.db.update_account_balance(self.db.account["accNum"], self.db.account["Balance"] - amount["amount"])
+        return "1|succeed"
+
+    def deposit(self, amount: dict) -> str:
+        """
+        deposit amount from current login user
+
+        :param amount: the amount
+        :return: fit msg
+        """
         if self.db.account is None:
             raise ValueError("0|Please logging first")
+        print("deposit")
 
-    def gen_otp(self, user_otp):
+        # TODO: TOTP
+        self.db.update_account_balance(self.db.account["accNum"], self.db.account["Balance"] + amount["amount"])
+        return "1|succeed"
+
+    def transfer(self, params):
+        if self.db.account["Balance"] < params["amount"]:
+            raise ValueError("0|You don't have enough money")
+
+        if not self.db.check_if_exists(params["accNum"]):
+            raise ValueError("0|no such account!")
+
+        self.db.update_account_balance(self.db.account["accNum"], self.db.account["Balance"] - params["amount"])
+        self.db.update_account_balance(params["accNum"], self.db.account["Balance"] + params["amount"])
+        return "1|succeed"
+
+    def otp(self, user_otp) -> str:
         """
+        handle TOTP
 
-        :param user_otp:
-        :return:
+        :param user_otp: user OTP
+        :return: fit msg
         """
         # if not self.otp_wait:
         #    return "0|otp is not necessary now!"

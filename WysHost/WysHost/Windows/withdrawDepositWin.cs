@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Client;
+using Newtonsoft.Json;
 using System;
 using System.Windows.Forms;
 
@@ -6,12 +7,10 @@ namespace WysHost.Windows
 {
     public partial class withdrawDepositWin : Form
     {
-        Account _currAccount;
         bool _isWithdrawState;
-        public withdrawDepositWin(Account acc, bool isWithdrawState)
+        public withdrawDepositWin(bool isWithdrawState)
         {
             InitializeComponent();
-            _currAccount = acc;
             _isWithdrawState = isWithdrawState;
             if (_isWithdrawState)
                 this.Text = "Withdraw Window";
@@ -24,12 +23,20 @@ namespace WysHost.Windows
             int amount;
             if (int.TryParse(_amountInput.Text, out amount))
             {
-                var loginData = new { amount = _isWithdrawState ? -amount : amount };
-                string jsonString = JsonConvert.SerializeObject(loginData);
-                string res = MainWin.connector.SendAndRecvServer(_isWithdrawState ? Client.serverOpcode.withdraw : Client.serverOpcode.deposit, jsonString);
+                if (amount > 0)
+                {
+                    var loginData = new { amount = _isWithdrawState ? -amount : amount };
+                    string jsonString = JsonConvert.SerializeObject(loginData);
+                    string res = MainWin.connector.SendAndRecvServer(_isWithdrawState ? serverOpcode.withdraw : serverOpcode.deposit, jsonString);
+                    if (res[0] == Utils.SUCCESSED)
+                        AccountPage._currAccount.Balance += _isWithdrawState ? -amount : amount;
+                    MessageBox.Show(res.Substring(2));
+                }
+                else MessageBox.Show("Do not be a wiseguy.");
             }
-            else
-                MessageBox.Show("please enter a number!");
+            else MessageBox.Show("please enter a number!");
         }
+
+        private void cancelBtn_Click(object sender, EventArgs e) => Close();
     }
 }

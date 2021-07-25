@@ -9,7 +9,7 @@ namespace WysHost
 {
     public partial class AccountPage : Form
     {
-        Account _currAccount;
+        public static Account _currAccount;
         public AccountPage(Account acc)
         {
             InitializeComponent();
@@ -35,18 +35,20 @@ namespace WysHost
 
         private void withdrawBtn_Click(object sender, EventArgs e)
         {
-            new Form1().ShowDialog();
-            //new withdrawDepositWin(_currAccount, true).ShowDialog();
+            //new Form1().ShowDialog();
+            new withdrawDepositWin(true).ShowDialog();
+            balanceLbl.Text = "Balance: " + _currAccount.Balance.ToString();
         }
 
         private void depositBtn_Click(object sender, EventArgs e)
         {
-            new withdrawDepositWin(_currAccount, false).ShowDialog();
+            new withdrawDepositWin(false).ShowDialog();
+            balanceLbl.Text = "Balance: " + _currAccount.Balance.ToString();
         }
 
         private void transferBtn_Click(object sender, EventArgs e)
         {
-            new TransferWin(_currAccount).ShowDialog();
+            new TransferWin().ShowDialog();
         }
     }
 }
