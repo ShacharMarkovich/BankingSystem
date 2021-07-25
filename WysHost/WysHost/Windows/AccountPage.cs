@@ -35,8 +35,8 @@ namespace WysHost
 
         private void withdrawBtn_Click(object sender, EventArgs e)
         {
-            //new Form1().ShowDialog();
-            new withdrawDepositWin(true).ShowDialog();
+            new Form1().ShowDialog();
+            //new withdrawDepositWin(true).ShowDialog();
             balanceLbl.Text = "Balance: " + _currAccount.Balance.ToString();
         }
 

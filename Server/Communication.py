@@ -29,7 +29,7 @@ class Communication:
         self.db = SqlDataBase()
         self.commands = {"login": self.login, "register": self.register, "logout": self.logout,
                          "updateData": self.update_data, "otp": self.otp, "withdraw": self.withdraw,
-                         "deposit": self.deposit}
+                         "deposit": self.deposit, "transfer": self.transfer}
         self.otp_wait = False
 
     def start(self):
@@ -57,22 +57,20 @@ class Communication:
         """
         code = 1
         logging.info("start communicate!")
-        try:
-            while code != self.EXIT:
-                enc_data = self.conn_socket.recv(self.MAX_MSG)
-                try:
-                    data = self.decrypt(enc_data)
-                    code, params = self.parse(data)
-                except Exception as e:
-                    logging.info("[!] error: ", str(e))
-                    self.conn_socket.send(self.encrypt("0|message not in format"))
-                else:
-                    logging.info(f"got from client:\n(code, params) = {code, params}")
-                    ans = self.commands[code](params)
-                    logging.info(ans)
-                    self.conn_socket.send(self.encrypt(ans))
-        except:
-            pass
+        while code != self.EXIT:
+            enc_data = self.conn_socket.recv(self.MAX_MSG)
+            try:
+                data = self.decrypt(enc_data)
+                code, params = self.parse(data)
+            except Exception as e:
+                logging.info("[!] error: ")
+                print(str(e))
+                self.conn_socket.send(self.encrypt("0|message not in format"))
+            else:
+                logging.info(f"got from client:\n(code, params) = {code, params}")
+                ans = self.commands[code](params)
+                print("ans: ", ans, " .")
+                self.conn_socket.send(self.encrypt(ans))
 
     def keys_exchange(self) -> None:
         """
@@ -184,10 +182,10 @@ class Communication:
             raise ValueError("0|Please logging first")
         if self.db.account["Balance"] < amount["amount"]:
             raise ValueError("0|You don't have enough money")
-        print("withdraw")
 
         # TODO: TOTP
         self.db.update_account_balance(self.db.account["accNum"], self.db.account["Balance"] - amount["amount"])
+        print("withdraw")
         return "1|succeed"
 
     def deposit(self, amount: dict) -> str:
@@ -199,10 +197,10 @@ class Communication:
         """
         if self.db.account is None:
             raise ValueError("0|Please logging first")
-        print("deposit")
 
         # TODO: TOTP
         self.db.update_account_balance(self.db.account["accNum"], self.db.account["Balance"] + amount["amount"])
+        print("deposit")
         return "1|succeed"
 
     def transfer(self, params):

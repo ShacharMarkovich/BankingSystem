@@ -132,7 +132,7 @@ class SqlDataBase(object):
         :param new_bal: his new balance
         """
         self.cur.execute(
-            f"""UPDATE Account SET balance='{new_bal: float}' WHERE accID = {acc_id}""")
+            f"""UPDATE Account SET balance={new_bal} WHERE accID = {acc_id}""")
         self.con.commit()
         if self.account["accNum"] == acc_id:
             self.account["Balance"] = new_bal
